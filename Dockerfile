@@ -1,18 +1,37 @@
-FROM python:3.11
+FROM python:3.11-slim
 
 WORKDIR /app
 
+# Install system dependencies for Tesseract OCR
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
+    tesseract-ocr-eng \
+    libtesseract-dev \
     libgl1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy requirements first (for better caching)
 COPY requirements.txt .
 
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Download spaCy model (required for your NLP features)
+RUN python -m spacy download en_core_web_sm
+
+# Copy the rest of your application
 COPY . .
 
-EXPOSE 5000
+# Use Railway's dynamic PORT
+ARG PORT=5000
+ENV PORT=${PORT}
+EXPOSE ${PORT}
 
-CMD ["gunicorn", "run:app", "--bind", "0.0.0.0:5000"]
+# Start the application
+CMD ["sh", "-c", "gunicorn run:app --bind 0.0.0.0:${PORT}"]
