@@ -22,8 +22,8 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Download spaCy model (required for your NLP features)
-RUN python -m spacy download en_core_web_sm
+# FIXED: Download spaCy model directly via pip (bypasses the broken spacy download command)
+RUN pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.6.0/en_core_web_sm-3.6.0-py3-none-any.whl
 
 # Copy the rest of your application
 COPY . .
