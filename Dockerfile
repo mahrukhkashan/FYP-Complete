@@ -22,7 +22,7 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# FIXED: Download spaCy model directly via pip (bypasses the broken spacy download command)
+# Download spaCy model directly via pip
 RUN pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.6.0/en_core_web_sm-3.6.0-py3-none-any.whl
 
 # Copy the rest of your application
@@ -33,5 +33,5 @@ ARG PORT=5000
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
-# Start the application
-CMD ["sh", "-c", "gunicorn run:app --bind 0.0.0.0:${PORT}"]
+# FIXED: Point to api.app instead of run
+CMD ["sh", "-c", "gunicorn api.app:app --bind 0.0.0.0:${PORT}"]
