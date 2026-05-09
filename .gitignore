@@ -20,3 +20,5 @@ models/saved_models/*.pkl
 # OS
 .DS_Store
 Thumbs.db
+
+.env

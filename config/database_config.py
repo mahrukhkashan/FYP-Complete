@@ -21,7 +21,7 @@ class DatabaseConnection:
                 host="localhost",
                 database="mimic",
                 user="postgres",
-                password="Fozia786",  # Change this to your password
+                password="postgre22",  # Change this to your password
                 port="5432"
             )
             self.cursor = self.connection.cursor(cursor_factory=RealDictCursor)

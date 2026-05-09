@@ -6,7 +6,8 @@ load_dotenv()
 class Config:
     """Base configuration"""
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
-    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:Fozia786@localhost:5432/mimiciii'  # Use your correct password
+    # SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:postgre22@localhost:5432/mimic'  # Use your correct password
+    SQLALCHEMY_DATABASE_URI = 'postgresql://neondb_owner:npg_K3xRLhdC9fXe@ep-hidden-recipe-aprv69c7-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'  # Use your correct password
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Model paths
