@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up | ClinPredict AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+
+    <style>
+        body {
+            
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #e0f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 900px;
+            display: flex;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .left {
+            width: 40%;
+            background: linear-gradient(135deg, #23ae96, #00a896);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .left h2 {
+            margin-top: 20px;
+            letter-spacing: 2px;
+        }
+
+        .right {
+            width: 60%;
+            padding: 50px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            outline: none;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #23ae96;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        a {
+            color: #23ae96;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="left">
+        <i class="fas fa-chart-line fa-4x"></i>
+        <h2>CLINPREDICT AI</h2>
+        <p>Insight & Diagnostics</p>
+    </div>
+
+    <div class="right">
+        <h1>Sign Up</h1>
+
+        <!-- ✅ ONE CORRECT FORM -->
+        <form action="/auth/register" method="POST">
+
+            <div class="input-group">
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+
+            <div class="input-group">
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+
+            <!-- backend-required hidden fields -->
+            <input type="hidden" name="role" value="patient">
+            <input type="hidden" name="full_name" value="Patient User">
+
+            <button type="submit">Register</button>
+        </form>
+
+        <div class="footer">
+            Already have an account?
+            <a href="/login">Login</a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

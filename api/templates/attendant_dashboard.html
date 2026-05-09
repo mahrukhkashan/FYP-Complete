@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendant Portal - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .sidebar-item {
+            transition: all 0.2s ease;
+            color: #64748b;
+        }
+
+        .sidebar-item.active {
+            background-color: #0d9488;
+            color: white;
+            border-radius: 8px;
+        }
+
+        .sidebar-item:hover:not(.active) {
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .status-awaiting { background-color: #ffedd5; color: #9a3412; }
+        .status-pending { background-color: #dbeafe; color: #1e40af; }
+        .status-vitals { background-color: #f3e8ff; color: #6b21a8; }
+        .status-cleaning { background-color: #f1f5f9; color: #475569; }
+
+        .btn-update {
+            background-color: #0d9488;
+            color: white;
+            transition: background-color 0.2s;
+        }
+
+        .btn-update:hover {
+            background-color: #0f766e;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: #0d9488;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+                .btn-teal {
+            background-color: #0d9488;
+            color: white;
+            transition: background-color 0.2s;
+        }
+
+        .btn-teal:hover {
+            background-color: #0f766e;
+        }
+
+        .form-control {
+            width: 100%;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #0d9488;
+            background-color: white;
+            box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.1);
+        }
+        #settings-view {
+    width: 100%;
+    display: none;
+    padding: 32px;
+    overflow-y: auto;
+}
+
+#settings-view.active {
+    display: block;
+}
+
+.settings-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.settings-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+    .view-section {
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+
+.view-section.active {
+    display: block;
+}
+
+main {
+    min-height: 0;
+}
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+     
+    <!-- Sidebar -->
+<aside class="w-64 h-screen bg-white border-r border-gray-200 flex flex-col p-6 hidden md:flex">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-2 mb-10">
+        <div class="w-8 h-8 bg-[#0d9488] rounded-lg flex items-center justify-center text-white">
+            <i class="fa-solid fa-stethoscope"></i>
+        </div>
+        <h1 class="text-xl font-bold text-[#0d9488]">Attendant Portal</h1>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="flex-1 space-y-2">
+        <a href="#" id="nav-dashboard" class="sidebar-item active flex items-center justify-between p-3" onclick="switchView('dashboard')">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-table-cells-large"></i>
+                <span class="font-medium">Dashboard</span>
+            </div>
+            <div class="w-2 h-2 bg-white rounded-full"></div>
+        </a>
+
+        <a href="#" id="nav-profile" class="sidebar-item flex items-center gap-3 p-3" onclick="switchView('profile')">
+            <i class="fa-solid fa-user-doctor"></i>
+            <span class="font-medium">Attendant Profile</span>
+        </a>
+
+        <a href="#" id="nav-flow" class="sidebar-item flex items-center gap-3 p-3" onclick="switchView('flow')">
+            <i class="fa-solid fa-bed"></i>
+            <span class="font-medium">Patient Flow</span>
+        </a>
+
+        <a href="#" id="nav-queue" class="sidebar-item flex items-center gap-3 p-3" onclick="switchView('queue')">
+            <i class="fa-solid fa-list-check"></i>
+            <span class="font-medium">Task Queue</span>
+        </a>
+    </nav>
+
+    <!-- Footer Fixed Section -->
+     <div class="pt-6 pb-2">
+            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">System</span>
+    </div>
+    <div class="mt-auto pt-6 border-t border-gray-100 space-y-2">
+
+        <a href="#" id="nav-settings"
+           class="sidebar-item flex items-center gap-3 p-3"
+           onclick="switchView('settings')">
+            <i class="fa-solid fa-gear"></i>
+            <span class="font-medium">Settings</span>
+        </a>
+
+        <a href="#"
+           class="sidebar-item flex items-center gap-3 p-3 text-red-500 hover:text-red-600"
+           onclick="logout()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span class="font-medium">Logout</span>
+        </a>
+
+    </div>
+
+</aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen">
+        <!-- Header -->
+        <header class="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-8 shrink-0 relative z-10">
+            <div class="search-container flex-1 max-w-xl relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input 
+                    type="text" 
+                    id="patientSearch"
+                    placeholder="Search patients, rooms or IDs..." 
+                    class="w-full bg-gray-50 border border-gray-200 rounded-full py-2.5 pl-12 pr-4 text-sm text-gray-700 transition-all"
+                >
+            </div>
+            <div class="flex items-center gap-3 border-r pr-6 border-gray-200">
+    <div class="text-right hidden sm:block">
+        <p id="headerName" class="text-sm font-medium text-gray-800"></p>
+        <p class="text-xs text-gray-500">Head Attendant</p>
+    </div>
+    <div id="headerInitials" class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-medium border-2 border-white shadow-sm">
+        HA
+    </div>
+</div>
+                <div class="relative cursor-pointer" onclick="toggleNotifications()">
+                    <i class="fa-regular fa-bell text-xl text-gray-500"></i>
+                    <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
+                    
+                    <!-- Notification Dropdown -->
+                    <div id="notificationPanel" class="absolute right-0 mt-4 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 hidden overflow-hidden">
+                        <div class="p-4 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
+                            <span class="font-bold text-gray-800">Notifications</span>
+                            <span class="text-[10px] bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full font-bold">3 NEW</span>
+                        </div>
+                        <div class="max-h-96 overflow-y-auto custom-scrollbar">
+                            <div class="p-4 border-b border-gray-50 hover:bg-gray-50 transition cursor-default">
+                                <div class="flex gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                                        <i class="fa-solid fa-triangle-exclamation text-red-500 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold text-gray-800">Emergency Alert</p>
+                                        <p class="text-[11px] text-gray-500">Room 302-B call button pressed.</p>
+                                        <p class="text-[9px] text-gray-400 mt-1 uppercase font-bold">Just Now</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 border-b border-gray-50 hover:bg-gray-50 transition cursor-default">
+                                <div class="flex gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+                                        <i class="fa-solid fa-truck-ramp-box text-blue-500 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold text-gray-800">Transport Ready</p>
+                                        <p class="text-[11px] text-gray-500">Ambulance assigned for David Miller.</p>
+                                        <p class="text-[9px] text-gray-400 mt-1 uppercase font-bold">12 mins ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 hover:bg-gray-50 transition cursor-default">
+                                <div class="flex gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-teal-50 flex items-center justify-center shrink-0">
+                                        <i class="fa-solid fa-check-double text-teal-500 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold text-gray-800">Shift Change</p>
+                                        <p class="text-[11px] text-gray-500">Evening shift report is ready.</p>
+                                        <p class="text-[9px] text-gray-400 mt-1 uppercase font-bold">1 hour ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-gray-50 text-center">
+                            <button class="text-xs font-bold text-teal-600 hover:text-teal-700">Mark all as read</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div id="dashboard-view" class="view-section active flex-1 overflow-y-auto p-8 custom-scrollbar min-h-0">
+            
+            <!-- Quick Stats Section -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-10 h-10 bg-teal-50 text-teal-600 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-user-injured"></i>
+                        </div>
+                        <span class="text-xs font-medium text-teal-600 bg-teal-50 px-2 py-1 rounded">+12%</span>
+                    </div>
+                        <p class="text-gray-500 text-sm font-medium">Total Patients</p>
+                        <p id="stat-total" class="text-2xl font-medium text-gray-800">128</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <span class="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded">8 Pending</span>
+                    </div>
+                        <p class="text-gray-500 text-sm font-medium">Pending Tasks</p>
+                        <p id="stat-queue" class="text-2xl font-medium text-gray-800">24</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-door-open"></i>
+                        </div>
+                        <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">4 Soon</span>
+                    </div>
+                    <p class="text-gray-500 text-sm font-medium">Discharges</p>
+                    <p class="text-2xl font-bold text-gray-800">12</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-10 h-10 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-500 text-sm font-medium">Avg. Response</p>
+                    <p class="text-2xl font-bold text-gray-800">8.4m</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Main Table Section -->
+                <div class="lg:col-span-2">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold text-gray-800">Active Patient Tasks</h2>
+                        <button class="text-teal-600 text-sm font-bold hover:underline">View All Queue</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50/50 border-b border-gray-100">
+                                <tr>
+                                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Patient Details</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Room</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patientTableBody" class="divide-y divide-gray-100">
+                                <!-- Rows injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Activity Feed -->
+                <div class="lg:col-span-1">
+                    <h2 class="text-lg font-bold text-gray-800 mb-4">Recent Activity</h2>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
+                        <div class="flex gap-4">
+                            <div class="shrink-0 w-2 h-2 rounded-full bg-teal-500 mt-2"></div>
+                            <div>
+                                <p class="text-sm font-bold text-gray-800">Transport Completed</p>
+                                <p class="text-xs text-gray-500">Sarah Jenkins moved to Radiology</p>
+                                <p class="text-[10px] text-gray-400 mt-1 uppercase font-bold">2 mins ago</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="shrink-0 w-2 h-2 rounded-full bg-amber-500 mt-2"></div>
+                            <div>
+                                <p class="text-sm font-bold text-gray-800">New Urgent Request</p>
+                                <p class="text-xs text-gray-500">Vitals check required for Room 204</p>
+                                <p class="text-[10px] text-gray-400 mt-1 uppercase font-bold">15 mins ago</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="shrink-0 w-2 h-2 rounded-full bg-blue-500 mt-2"></div>
+                            <div>
+                                <p class="text-sm font-bold text-gray-800">Discharge Cleared</p>
+                                <p class="text-xs text-gray-500">Michael Chen ready for pickup</p>
+                                <p class="text-[10px] text-gray-400 mt-1 uppercase font-bold">45 mins ago</p>
+                            </div>
+                        </div>
+                        <button onclick="openHistoryModal()" class="w-full py-2.5 text-sm font-bold text-gray-500 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                            View History
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- View: Profile -->
+        <div id="profile-view" class="view-section flex-1 overflow-y-auto p-8 custom-scrollbar">
+            <div class="max-w-4xl mx-auto">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Attendant Profile</h2>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                    <!-- Form Body -->
+                    <div class="p-8">
+                        <form id="attendantForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <input type="hidden" id="aId">
+                            
+                            <div class="form-group">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Full Name</label>
+                                <input type="text" id="aName" class="form-control" placeholder="Enter your full name" required value="John Doe">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Email Address</label>
+                                <input type="email" id="aEmail" class="form-control" placeholder="attendant@gmail.com" value="john.doe@hospital.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Gender</label>
+                                <select id="aGender" class="form-control">
+                                    <option>Male</option>
+                                    <option>Female</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Date of Birth</label>
+                                <input type="date" id="aDob" class="form-control" onchange="calculateAge('aDob','aAge')" value="1990-05-15">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Age</label>
+                                <input type="number" id="aAge" class="form-control bg-gray-50" placeholder="35" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Contact Number</label>
+                                    <div class="flex gap-2">
+                                        <select id="aCode" class="h-[42px] w-32 bg-gray-50 border border-gray-200 rounded-xl px-2 text-sm focus:outline-none focus:border-teal-500 transition-all">
+                                        </select>
+                                        <input type="text" id="aContact" class="form-control flex-1" placeholder="300 1234567" value="3001234567">
+                                    </div>
+                            </div>
+
+                            <div class="form-group md:col-span-2">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Address</label>
+                                <textarea id="aAddress" class="form-control" rows="2" placeholder="House No, Street, Area, City">Street 12, Medical Complex Area</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Role</label>
+                                <select id="aRole" class="form-control">
+                                    <option>Nurse</option>
+                                    <option>Caregiver</option>
+                                    <option selected>Assistant</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Shift</label>
+                                <select id="aShift" class="form-control">
+                                    <option selected>Morning(8AM-4PM)</option>
+                                    <option>Evening(4PM-12AM)</option>
+                                    <option>Night(12AM-8AM)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group md:col-span-2">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Notes</label>
+                                <textarea id="aNotes" class="form-control" rows="3" placeholder="Enter any additional notes..."></textarea>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Footer Action Bar (Updated: Smaller buttons & Save text) -->
+                    
+                        <div class="p-6 border-t border-gray-50 flex justify-end">
+                            <div class="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
+                                <button class="px-5 py-2 text-xs rounded-lg border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 transition" onclick="switchView('dashboard')">
+                                    Cancel
+                                </button>
+                                <button class="px-7 py-2 text-xs rounded-lg btn-teal font-bold shadow-md shadow-teal-100 transition transform hover:scale-[1.02]" onclick="saveProfile()">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+         <!-- View: Patient Flow -->
+        <div id="flow-view" class="view-section flex-1 overflow-y-auto p-8 custom-scrollbar">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Patient Flow</h2>
+                    <p class="text-sm text-gray-500 mt-1">Real-time status of hospital occupancy and movement.</p>
+                </div>
+                <div class="flex gap-2">
+                    <select id="flowPriorityFilter" onchange="renderFlow()" class="px-4 py-2 bg-white border border-gray-200 text-xs font-bold rounded-xl text-gray-600 outline-none focus:ring-2 focus:ring-teal-500/20">
+                        <option value="All">All Priorities</option>
+                        <option value="High">High Priority</option>
+                        <option value="Medium">Medium Priority</option>
+                        <option value="Normal">Normal Priority</option>
+                        <option value="Low">Low Priority</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Admissions -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-center justify-between px-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                            <h3 class="font-bold text-gray-700 text-sm">Admissions</h3>
+                        </div>
+                        <span class="text-xs bg-blue-50 text-blue-600 font-bold px-2 py-0.5 rounded-full" id="count-admission">0</span>
+                    </div>
+                    <div class="space-y-4" id="flow-admission"></div>
+                </div>
+
+                <!-- In-Progress / Treatment -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-center justify-between px-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+                            <h3 class="font-bold text-gray-700 text-sm">Under Monitoring</h3>
+                        </div>
+                        <span class="text-xs bg-amber-50 text-amber-600 font-bold px-2 py-0.5 rounded-full" id="count-monitoring">0</span>
+                    </div>
+                    <div class="space-y-4" id="flow-monitoring"></div>
+                </div>
+
+                <!-- Discharge -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-center justify-between px-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 bg-teal-500 rounded-full"></span>
+                            <h3 class="font-bold text-gray-700 text-sm">Ready for Discharge</h3>
+                        </div>
+                        <span class="text-xs bg-teal-50 text-teal-600 font-bold px-2 py-0.5 rounded-full" id="count-discharge">0</span>
+                    </div>
+                    <div class="space-y-4" id="flow-discharge"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Task Queue -->
+        <div id="queue-view" class="view-section flex-1 overflow-y-auto p-8 custom-scrollbar">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">Live Task Queue</h2>
+                <div class="bg-white border border-gray-200 rounded-xl p-1 flex">
+                    <button id="btn-tasks-all" class="px-4 py-2 text-xs font-bold bg-teal-50 text-teal-700 rounded-lg transition" onclick="filterTasks('all')">All Tasks</button>
+                    
+                </div>
+                      <!-- Add Task Interactive Row -->
+                 
+                        <div class="h-8 w-px bg-gray-100"></div>
+                        <button onclick="openAddTaskModal()" 
+                            class="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-teal-700 transition">
+                                <i class="fa-solid fa-plus"></i> Add Task
+                        </button>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+                <div id="taskQueueContainer" class="divide-y divide-gray-50"></div>
+            </div>
+        </div>
+        <!-- View: Settings -->
+<div id="settings-view" class="view-section">
+
+    <div class="settings-wrapper space-y-8">
+
+        <!-- Header -->
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Account Settings</h2>
+            <p class="text-sm text-gray-500">Manage your profile and security settings</p>
+        </div>
+
+        <!-- Profile Credentials -->
+        <div class="settings-card">
+            <div class="p-6 border-b flex items-center gap-3">
+                <i class="fa-solid fa-user text-teal-600"></i>
+                <h3 class="font-bold text-gray-800">Profile Credentials</h3>
+            </div>
+
+            <div class="p-6 space-y-6">
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400">Current Username</label>
+                        <input type="text" class="form-control mt-1" value="johndoe_med" readonly>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-gray-400">New Username</label>
+                        <input type="text" class="form-control mt-1" placeholder="Enter new username">
+                    </div>
+                </div>
+
+                <button class="btn-teal px-5 py-2 rounded-lg text-xs font-bold" onclick="triggerToast('Username updated')">
+                    Update Username
+                </button>
+
+                <div class="border-t pt-6">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs font-bold text-gray-400">Email</label>
+                            <input type="email" class="form-control mt-1" value="john.doe@hospital.com" readonly>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-bold text-gray-400">New Email</label>
+                            <input type="email" class="form-control mt-1" placeholder="Enter new email">
+                        </div>
+                    </div>
+
+                    <button class="btn-teal mt-4 px-5 py-2 rounded-lg text-xs font-bold" onclick="triggerToast('Verification email sent')">
+                        Update Email
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Security Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div class="p-6 border-b flex items-center gap-3">
+                <i class="fa-solid fa-shield-halved text-teal-600"></i>
+                <h3 class="font-bold text-gray-800">Security & Password</h3>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <div class="grid md:grid-cols-3 gap-4">
+                    <input type="password" class="form-control" placeholder="Current Password">
+                    <input type="password" class="form-control" placeholder="New Password">
+                    <input type="password" class="form-control" placeholder="Confirm Password">
+                </div>
+
+                <button class="btn-teal px-6 py-2 rounded-lg text-xs font-bold" onclick="triggerToast('Password changed')">
+                    Change Password
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="flex justify-end gap-3">
+            <button onclick="switchView('dashboard')" class="px-5 py-2 text-xs border rounded-lg font-bold text-gray-600">
+                Cancel
+            </button>
+            <button class="btn-teal px-6 py-2 rounded-lg text-xs font-bold" onclick="triggerToast('Settings saved')">
+                Save All Changes
+            </button>
+        </div>
+
+    </div>
+</main>
+
+    <!-- Modals -->
+    <!-- Add Task Modal -->
+<div id="addTaskModal" class="fixed inset-0 bg-black/60 flex items-center justify-center hidden z-[200] backdrop-blur-sm">
+    <div class="bg-white rounded-3xl p-8 w-[450px] shadow-2xl">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-gray-800">Create New Task</h3>
+            <button onclick="closeModal('addTaskModal')" class="text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <form id="taskForm" class="space-y-5" onsubmit="handleAddTask(event)">
+            <div>
+                <label class="text-xs font-bold text-gray-400 uppercase">Patient</label>
+                <select id="taskPatient" class="form-control" required></select>
+            </div>
+            
+            <div>
+                <label class="text-xs font-bold text-gray-400 uppercase">Description</label>
+                <input type="text" id="taskDesc" class="form-control" required>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase">Priority</label>
+                    <select id="taskPriority" class="form-control">
+                        <option value="Normal">Normal</option>
+                        <option value="Urgent">Urgent</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase">Time</label>
+                    <input type="time" id="taskTime" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button type="button" onclick="closeModal('addTaskModal')" class="flex-1 py-3 bg-gray-100 rounded-xl font-bold">
+                    Cancel
+                </button>
+                <button type="submit" class="flex-1 py-3 btn-teal rounded-xl font-bold">
+                    Create Task
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+    <!-- Update Modal -->
+    <div id="updateModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-[100]">
+        <div class="bg-white rounded-2xl p-6 w-96 shadow-2xl">
+            <h3 class="text-lg font-bold mb-4" id="modalTitle">Update Status</h3>
+            <p class="text-sm text-gray-600 mb-6">Select a new status for this patient.</p>
+            <div class="space-y-2">
+                <button class="w-full text-left p-4 rounded-xl border border-teal-100 hover:bg-teal-50 transition flex items-center justify-between group" onclick="closeModal('updateModal')">
+                    <span class="font-bold text-gray-700">Complete Task</span>
+                    <i class="fa-solid fa-circle-check text-teal-500 opacity-0 group-hover:opacity-100"></i>
+                </button>
+                <button class="w-full text-left p-4 rounded-xl border border-gray-100 hover:bg-amber-50 transition flex items-center justify-between group" onclick="closeModal('updateModal')">
+                    <span class="font-bold text-gray-700">Delay (15 mins)</span>
+                    <i class="fa-solid fa-clock text-amber-500 opacity-0 group-hover:opacity-100"></i>
+                </button>
+                <button class="w-full text-left p-4 rounded-xl border border-red-500/10 text-red-600 hover:bg-red-50 transition font-bold" onclick="closeModal('updateModal')">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal (New) -->
+    <div id="historyModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-[100]">
+        <div class="bg-white rounded-2xl w-[600px] max-h-[80vh] flex flex-col shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <h3 class="text-lg font-bold text-gray-800">Task Completion History</h3>
+                <button type="button" aria-label="Close history modal" title="Close" onclick="closeModal('historyModal')" class="text-gray-400 hover:text-gray-600">
+                  <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+                <div class="p-4 rounded-xl border border-gray-100 bg-white hover:border-teal-100 transition">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-xs font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded uppercase">Completed</span>
+                        <span class="text-[10px] font-bold text-gray-400">TODAY, 02:45 PM</span>
+                    </div>
+                    <p class="text-sm font-bold text-gray-800">Transport: Sarah Jenkins</p>
+                    <p class="text-xs text-gray-500">Patient successfully moved from Room 302-B to Radiology Ward.</p>
+                </div>
+                <div class="p-4 rounded-xl border border-gray-100 bg-white hover:border-teal-100 transition">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-xs font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded uppercase">Completed</span>
+                        <span class="text-[10px] font-bold text-gray-400">TODAY, 01:12 PM</span>
+                    </div>
+                    <p class="text-sm font-bold text-gray-800">Discharge: Robert Fox</p>
+                    <p class="text-xs text-gray-500">Discharge paperwork and transport to exit gate completed.</p>
+                </div>
+                <div class="p-4 rounded-xl border border-gray-100 bg-white hover:border-teal-100 transition opacity-60">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded uppercase">Cancelled</span>
+                        <span class="text-[10px] font-bold text-gray-400">TODAY, 11:30 AM</span>
+                    </div>
+                    <p class="text-sm font-bold text-gray-800">Vitals: Jenny Wilson</p>
+                    <p class="text-xs text-gray-500">Task cancelled by Nurse Unit Manager (duplicate task).</p>
+                </div>
+            </div>
+            <div class="p-4 bg-gray-50 text-center">
+                <button class="text-sm font-bold text-teal-600 hover:underline">Download Full Report (PDF)</button>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+   <script>
+    // --- 1. DATA STATE ---
+    let patients = [];
+let tasks = [];
+
+
+    let taskFilterMode = 'all';
+
+    const countryCodes = [
+        { name: "Afghanistan", code: "+93" }, { name: "Albania", code: "+355" }, { name: "Algeria", code: "+213" },
+        { name: "Andorra", code: "+376" }, { name: "Angola", code: "+244" }, { name: "Argentina", code: "+54" },
+        { name: "Armenia", code: "+374" }, { name: "Australia", code: "+61" }, { name: "Austria", code: "+43" },
+        { name: "Azerbaijan", code: "+994" }, { name: "Bahamas", code: "+1-242" }, { name: "Bahrain", code: "+973" },
+        { name: "Bangladesh", code: "+880" }, { name: "Barbados", code: "+1-246" }, { name: "Belarus", code: "+375" },
+        { name: "Belgium", code: "+32" }, { name: "Belize", code: "+501" }, { name: "Benin", code: "+229" },
+        { name: "Bhutan", code: "+975" }, { name: "Bolivia", code: "+591" }, { name: "Bosnia and Herzegovina", code: "+387" },
+        { name: "Botswana", code: "+267" }, { name: "Brazil", code: "+55" }, { name: "Brunei", code: "+673" },
+        { name: "Bulgaria", code: "+359" }, { name: "Burkina Faso", code: "+226" }, { name: "Burundi", code: "+257" },
+        { name: "Cambodia", code: "+855" }, { name: "Cameroon", code: "+237" }, { name: "Canada", code: "+1" },
+        { name: "Cape Verde", code: "+238" }, { name: "Central African Republic", code: "+236" }, { name: "Chad", code: "+235" },
+        { name: "Chile", code: "+56" }, { name: "China", code: "+86" }, { name: "Colombia", code: "+57" },
+        { name: "Comoros", code: "+269" }, { name: "Congo", code: "+242" }, { name: "Costa Rica", code: "+506" },
+        { name: "Croatia", code: "+385" }, { name: "Cuba", code: "+53" }, { name: "Cyprus", code: "+357" },
+        { name: "Czech Republic", code: "+420" }, { name: "Denmark", code: "+45" }, { name: "Djibouti", code: "+253" },
+        { name: "Dominica", code: "+1-767" }, { name: "Dominican Republic", code: "+1-809" }, { name: "Ecuador", code: "+593" },
+        { name: "Egypt", code: "+20" }, { name: "El Salvador", code: "+503" }, { name: "Equatorial Guinea", code: "+240" },
+        { name: "Eritrea", code: "+291" }, { name: "Estonia", code: "+372" }, { name: "Ethiopia", code: "+251" },
+        { name: "Fiji", code: "+679" }, { name: "Finland", code: "+358" }, { name: "France", code: "+33" },
+        { name: "Gabon", code: "+241" }, { name: "Gambia", code: "+220" }, { name: "Georgia", code: "+995" },
+        { name: "Germany", code: "+49" }, { name: "Ghana", code: "+233" }, { name: "Greece", code: "+30" },
+        { name: "Grenada", code: "+1-473" }, { name: "Guatemala", code: "+502" }, { name: "Guinea", code: "+224" },
+        { name: "Guinea-Bissau", code: "+245" }, { name: "Guyana", code: "+592" }, { name: "Haiti", code: "+509" },
+        { name: "Honduras", code: "+504" }, { name: "Hungary", code: "+36" }, { name: "Iceland", code: "+354" },
+        { name: "India", code: "+91" }, { name: "Indonesia", code: "+62" }, { name: "Iran", code: "+98" },
+        { name: "Iraq", code: "+964" }, { name: "Ireland", code: "+353" }, { name: "Israel", code: "+972" },
+        { name: "Italy", code: "+39" }, { name: "Jamaica", code: "+1-876" }, { name: "Japan", code: "+81" },
+        { name: "Jordan", code: "+962" }, { name: "Kazakhstan", code: "+7" }, { name: "Kenya", code: "+254" },
+        { name: "Kiribati", code: "+686" }, { name: "Korea, North", code: "+850" }, { name: "Korea, South", code: "+82" },
+        { name: "Kuwait", code: "+965" }, { name: "Kyrgyzstan", code: "+996" }, { name: "Laos", code: "+856" },
+        { name: "Latvia", code: "+371" }, { name: "Lebanon", code: "+961" }, { name: "Lesotho", code: "+266" },
+        { name: "Liberia", code: "+231" }, { name: "Libya", code: "+218" }, { name: "Liechtenstein", code: "+423" },
+        { name: "Lithuania", code: "+370" }, { name: "Luxembourg", code: "+352" }, { name: "Madagascar", code: "+261" },
+        { name: "Malawi", code: "+265" }, { name: "Malaysia", code: "+60" }, { name: "Maldives", code: "+960" },
+        { name: "Mali", code: "+223" }, { name: "Malta", code: "+356" }, { name: "Marshall Islands", code: "+692" },
+        { name: "Mauritania", code: "+222" }, { name: "Mauritius", code: "+230" }, { name: "Mexico", code: "+52" },
+        { name: "Micronesia", code: "+691" }, { name: "Moldova", code: "+373" }, { name: "Monaco", code: "+377" },
+        { name: "Mongolia", code: "+976" }, { name: "Montenegro", code: "+382" }, { name: "Morocco", code: "+212" },
+        { name: "Mozambique", code: "+258" }, { name: "Myanmar", code: "+95" }, { name: "Namibia", code: "+264" },
+        { name: "Nauru", code: "+674" }, { name: "Nepal", code: "+977" }, { name: "Netherlands", code: "+31" },
+        { name: "New Zealand", code: "+64" }, { name: "Nicaragua", code: "+505" }, { name: "Niger", code: "+227" },
+        { name: "Nigeria", code: "+234" }, { name: "Norway", code: "+47" }, { name: "Oman", code: "+968" },
+        { name: "Pakistan", code: "+92" }, { name: "Palau", code: "+680" }, { name: "Palestine", code: "+970" },
+        { name: "Panama", code: "+507" }, { name: "Papua New Guinea", code: "+675" }, { name: "Paraguay", code: "+595" },
+        { name: "Peru", code: "+51" }, { name: "Philippines", code: "+63" }, { name: "Poland", code: "+48" },
+        { name: "Portugal", code: "+351" }, { name: "Qatar", code: "+974" }, { name: "Romania", code: "+40" },
+        { name: "Russia", code: "+7" }, { name: "Rwanda", code: "+250" }, { name: "Saint Kitts and Nevis", code: "+1-869" },
+        { name: "Saint Lucia", code: "+1-758" }, { name: "Saint Vincent", code: "+1-784" }, { name: "Samoa", code: "+685" },
+        { name: "San Marino", code: "+378" }, { name: "Saudi Arabia", code: "+966" }, { name: "Senegal", code: "+221" },
+        { name: "Serbia", code: "+381" }, { name: "Seychelles", code: "+248" }, { name: "Sierra Leone", code: "+232" },
+        { name: "Singapore", code: "+65" }, { name: "Slovakia", code: "+421" }, { name: "Slovenia", code: "+386" },
+        { name: "Solomon Islands", code: "+677" }, { name: "Somalia", code: "+252" }, { name: "South Africa", code: "+27" },
+        { name: "Spain", code: "+34" }, { name: "Sri Lanka", code: "+94" }, { name: "Sudan", code: "+249" },
+        { name: "Suriname", code: "+597" }, { name: "Swaziland", code: "+268" }, { name: "Sweden", code: "+46" },
+        { name: "Switzerland", code: "+41" }, { name: "Syria", code: "+963" }, { name: "Taiwan", code: "+886" },
+        { name: "Tajikistan", code: "+992" }, { name: "Tanzania", code: "+255" }, { name: "Thailand", code: "+66" },
+        { name: "Timor-Leste", code: "+670" }, { name: "Togo", code: "+228" }, { name: "Tonga", code: "+676" },
+        { name: "Trinidad and Tobago", code: "+1-868" }, { name: "Tunisia", code: "+216" }, { name: "Turkey", code: "+90" },
+        { name: "Turkmenistan", code: "+993" }, { name: "Tuvalu", code: "+688" }, { name: "Uganda", code: "+256" },
+        { name: "Ukraine", code: "+380" }, { name: "United Arab Emirates", code: "+971" }, { name: "United Kingdom", code: "+44" },
+        { name: "United States", code: "+1" }, { name: "Uruguay", code: "+598" }, { name: "Uzbekistan", code: "+998" },
+        { name: "Vanuatu", code: "+678" }, { name: "Vatican City", code: "+39" }, { name: "Venezuela", code: "+58" },
+        { name: "Vietnam", code: "+84" }, { name: "Yemen", code: "+967" }, { name: "Zambia", code: "+260" },
+        { name: "Zimbabwe", code: "+263" }
+    ].sort((a, b) => a.name.localeCompare(b.name));
+
+    // --- 2. NAVIGATION & UI ---
+    function switchView(viewId) {
+    // Hide ALL views first
+    document.querySelectorAll('.view-section').forEach(section => {
+        section.classList.remove('active');
+        section.style.display = 'none';
+    });
+
+    // Remove sidebar active state
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.classList.remove('active');
+    });
+
+    // Show selected view
+    const selectedView = document.getElementById(viewId + '-view');
+    if (selectedView) {
+        selectedView.classList.add('active');
+        selectedView.style.display = 'block';
+    }
+
+    // Activate sidebar item
+    const selectedNav = document.getElementById('nav-' + viewId);
+    if (selectedNav) {
+        selectedNav.classList.add('active');
+    }
+
+    // Refresh page-specific content
+    if (viewId === 'dashboard') {
+        renderTable(patients);
+    }
+
+    if (viewId === 'flow') {
+        renderFlow();
+    }
+
+    if (viewId === 'queue') {
+        filterTasks(taskFilterMode);
+    }
+
+    if (viewId === 'profile') {
+        calculateAge('aDob', 'aAge');
+    }
+
+    if (viewId === 'settings') {
+        document.querySelectorAll('#settings-view input[type="password"]').forEach(input => {
+            input.value = '';
+        });
+
+        selectedView.scrollTop = 0;
+    }
+}
+
+    function toggleNotifications() {
+        const panel = document.getElementById('notificationPanel');
+        panel.classList.toggle('hidden');
+        if (!panel.classList.contains('hidden')) {
+            const badge = document.getElementById('notifBadge');
+            const count = document.getElementById('notifCount');
+            if(badge) badge.classList.add('hidden');
+            if(count) count.innerText = "0 NEW";
+        }
+    }
+
+    // Close notifications when clicking outside
+    document.addEventListener('click', (e) => {
+        const panel = document.getElementById('notificationPanel');
+        if (!panel) return;
+        const bell = e.target.closest('.fa-bell') || e.target.closest('.relative.cursor-pointer');
+        if (!bell && !panel.classList.contains('hidden')) {
+            panel.classList.add('hidden');
+        }
+    });
+
+    // --- 3. SEARCH & FILTERS ---
+    function handleSearch(val) {
+        const query = val.toLowerCase();
+        const activeSection = document.querySelector('.view-section.active');
+        if (!activeSection) return;
+        
+        const activeViewId = activeSection.id;
+
+        if (activeViewId === 'dashboard-view') {
+            const filtered = patients.filter(p => 
+                p.name.toLowerCase().includes(query) || 
+                p.room.toLowerCase().includes(query) || 
+                p.id.toLowerCase().includes(query)
+            );
+            renderTable(filtered);
+        } else if (activeViewId === 'queue-view') {
+            const currentTasks = taskFilterMode === 'mine' ? tasks.filter(t => t.isMine) : tasks;
+            const filtered = currentTasks.filter(t => 
+                t.patient.toLowerCase().includes(query) || 
+                t.task.toLowerCase().includes(query)
+            );
+            renderQueue(filtered);
+        }
+    }
+
+    // Attach search listener for the second script's style
+    const searchInput = document.getElementById('patientSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => handleSearch(e.target.value));
+    }
+
+    // --- 4. RENDERERS ---
+    function renderTable(data) {
+        const tableBody = document.getElementById('patientTableBody');
+        if (!tableBody) return;
+
+        tableBody.innerHTML = data.map(patient => `
+            <tr class="hover:bg-gray-50/50 transition-colors">
+                <td class="px-6 py-5">
+                    <div class="font-bold text-gray-800 text-md">${patient.name}</div>
+                    <div class="text-gray-400 text-xs font-medium">ID: ${patient.id}</div>
+                </td>
+                <td class="px-6 py-5">
+                    <span class="text-gray-600 font-bold">${patient.room}</span>
+                </td>
+                <td class="px-6 py-5">
+                    <div class="flex flex-col gap-1">
+                        <span class="status-badge ${patient.statusClass}">${patient.status}</span>
+                        <div class="flex items-center gap-1 ml-1">
+                            <span class="w-1.5 h-1.5 rounded-full ${patient.priorityColor}"></span>
+                            <span class="text-[10px] text-gray-400 font-bold uppercase">${patient.priority}</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-5">
+                    <button onclick="openModal('${patient.name}')" class="btn-teal px-5 py-2 rounded-xl font-bold text-xs shadow-sm shadow-teal-200">
+                        Update
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+
+        const totalStat = document.getElementById('stat-total');
+        if (totalStat) totalStat.innerText = data.length;
+    }
+
+    function renderFlow() {
+        const filterEl = document.getElementById('flowPriorityFilter');
+        const selectedPriority = filterEl ? filterEl.value : 'All';
+        const flowKeys = ['admission', 'monitoring', 'discharge'];
+        
+        flowKeys.forEach(key => {
+            const container = document.getElementById(`flow-${key}`);
+            const countEl = document.getElementById(`count-${key}`);
+            if (!container) return;
+
+            let data = patients.filter(p => p.flow === key);
+            if (selectedPriority !== 'All') {
+                data = data.filter(p => p.priority === selectedPriority);
+            }
+
+            if (countEl) countEl.innerText = data.length;
+            
+            if (data.length === 0) {
+                container.innerHTML = `<div class="p-4 border border-dashed border-gray-200 rounded-xl text-center text-[10px] text-gray-400 uppercase font-bold">No results</div>`;
+            } else {
+                container.innerHTML = data.map(p => `
+                    <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:border-teal-200 transition-all group cursor-pointer" onclick="alert('Viewing flow details for ${p.name}')">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-bold text-gray-800">${p.name}</span>
+                            <span class="w-1.5 h-1.5 rounded-full ${p.priorityColor}"></span>
+                        </div>
+                        <div class="text-[10px] text-gray-500 font-medium mb-3">Room: ${p.room}</div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded w-fit mb-1">ID: ${p.id}</span>
+                                <span class="text-[8px] font-bold text-gray-400 uppercase">${p.priority} PRIORITY</span>
+                            </div>
+                            <button class="text-gray-400 hover:text-teal-600 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-arrow-right text-[10px]"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        });
+    }
+
+    function filterTasks(mode) {
+        taskFilterMode = mode;
+        const btnAll = document.getElementById('btn-tasks-all');
+        const btnMine = document.getElementById('btn-tasks-mine');
+
+        if (mode === 'mine') {
+            if(btnMine) btnMine.className = "px-4 py-2 text-xs font-bold bg-teal-50 text-teal-700 rounded-lg transition";
+            if(btnAll) btnAll.className = "px-4 py-2 text-xs font-bold text-gray-400 hover:text-gray-600 transition";
+            renderQueue(tasks.filter(t => t.isMine));
+        } else {
+            if(btnAll) btnAll.className = "px-4 py-2 text-xs font-bold bg-teal-50 text-teal-700 rounded-lg transition";
+            if(btnMine) btnMine.className = "px-4 py-2 text-xs font-bold text-gray-400 hover:text-gray-600 transition";
+            renderQueue(tasks);
+        }
+    }
+
+    function renderQueue(data) {
+        const container = document.getElementById('taskQueueContainer');
+        if (!container) return;
+
+        if (data.length === 0) {
+            container.innerHTML = `<div class="p-10 text-center text-gray-400 text-sm">No tasks found.</div>`;
+        } else {
+            container.innerHTML = data.map(task => `
+                <div class="p-6 flex items-center justify-between hover:bg-gray-50/50 transition" id="task-${task.id}">
+                    <div class="flex items-center gap-6">
+                        <div class="text-center w-16">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Time</p>
+                            <p class="text-xs font-bold text-gray-800">${task.time}</p>
+                        </div>
+                        <div class="h-10 w-[1px] bg-gray-100"></div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-800">${task.task}</p>
+                            <div class="flex items-center gap-2 mt-1">
+                                <p class="text-xs text-gray-500">Patient: ${task.patient}</p>
+                                <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                              
+    <p class="text-[10px] font-bold text-teal-600 uppercase tracking-tighter">
+         ${task.isMine ? ` Assigned to Me` : ''}
+    </p>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-8">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Priority</p>
+                            <span class="text-xs font-bold ${task.priority === 'Urgent' ? 'text-rose-500' : 'text-teal-600'}">${task.priority}</span>
+                        </div>
+                        <button class="px-5 py-2 bg-gray-900 text-white text-[11px] font-bold rounded-xl hover:bg-teal-700 transition" onclick="acceptTask(${task.id})">
+                            ${task.status === 'In-Progress' ? 'Complete' : (task.assignedTo === 'John Doe' ? 'Start Task' : 'Accept Task')}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        const queueStat = document.getElementById('stat-queue');
+        if (queueStat) queueStat.innerText = tasks.length;
+    }
+
+    // --- 5. ACTIONS & HELPERS ---
+   function acceptTask(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+
+    if (task.status === 'In-Progress') {
+        axios.post("/attendant/complete-task", {
+            task_id: taskId
+        }, { withCredentials: true })
+        .then(() => {
+            triggerToast("Task completed");
+            loadTasks();
+        });
+
+    } else {
+        axios.post("/attendant/accept-task", {
+            task_id: taskId
+        }, { withCredentials: true })
+        .then(() => {
+            triggerToast("Task started");
+            loadTasks();
+        });
+    }
+}
+
+function loadProfile() {
+    axios.get("/attendant/profile", { withCredentials: true })
+    .then(res => {
+        const p = res.data.profile;
+
+        document.getElementById("aName").value = p.full_name || "";
+        document.getElementById("aEmail").value = p.email || "";
+        document.getElementById("aGender").value = p.gender || "";
+        document.getElementById("aDob").value = p.dob || "";
+        document.getElementById("aContact").value = p.contact || "";
+        document.getElementById("aAddress").value = p.address || "";
+        document.getElementById("aShift").value = p.shift || "";
+        document.getElementById("aNotes").value = p.notes || "";
+
+        calculateAge('aDob','aAge');
+    });
+}
+function saveProfile() {
+    axios.post("/attendant/profile", {
+        name: document.getElementById("aName").value,
+        email: document.getElementById("aEmail").value,
+        gender: document.getElementById("aGender").value,
+        dob: document.getElementById("aDob").value,
+        contact: document.getElementById("aContact").value,
+        address: document.getElementById("aAddress").value,
+        shift: document.getElementById("aShift").value,
+        notes: document.getElementById("aNotes").value
+    }, { withCredentials: true })
+    .then(() => {
+        triggerToast("Profile updated");
+        switchView('dashboard');
+    });
+}
+
+function logout() {
+    if (confirm("Logout?")) {
+        fetch("/attendant/logout", {
+            method: "GET",
+            credentials: "include"
+        }).then(() => {
+            window.location.href = "/login"; // or your login page route
+        });
+    }
+}
+
+    function populateCountryCodes() {
+        const select = document.getElementById('aCode');
+        if (!select) return;
+        select.innerHTML = countryCodes.map(item => 
+            `<option value="${item.code}" ${item.name === "Pakistan" ? "selected" : ""}>${item.name} (${item.code})</option>`
+        ).join('');
+    }
+
+    function calculateAge(dobId, ageId) {
+        const dobInput = document.getElementById(dobId).value;
+        if (!dobInput) return;
+        const dob = new Date(dobInput);
+        const today = new Date();
+        let age = today.getFullYear() - dob.getFullYear();
+        const m = today.getMonth() - dob.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+        const ageField = document.getElementById(ageId);
+        if (ageField) ageField.value = age > 0 ? age : 0;
+    }
+
+    function togglePassword(id, icon) {
+        const input = document.getElementById(id);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.replace("fa-eye", "fa-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.replace("fa-eye-slash", "fa-eye");
+        }
+    }
+
+   
+    function handleAddTask(e) {
+    e.preventDefault();
+
+    const patientId = document.getElementById('taskPatient').value;
+    const desc = document.getElementById('taskDesc').value;
+    const priority = document.getElementById('taskPriority').value;
+    const time = document.getElementById('taskTime').value;
+
+    axios.post("/attendant/add-task", {
+        patient_id: patientId,
+        task: desc,
+        priority: priority,
+        time: time
+    }, { withCredentials: true })
+    .then(() => {
+        triggerToast("Task added");
+        closeModal('addTaskModal');
+        loadTasks();
+    });
+}
+
+function openAddTaskModal() {
+    console.log("Modal triggered"); // debug
+    document.getElementById('addTaskModal').classList.remove('hidden');
+}
+function populatePatientDropdown() {
+    const select = document.getElementById('taskPatient');
+    if (!select) return;
+
+    select.innerHTML =
+        '<option value="" disabled selected>Select patient...</option>' +
+        patients.map(p => `
+            <option value="${p.id}">
+                ${p.name} (Room: ${p.room})
+            </option>
+        `).join('');
+}
+
+
+    function openModal(name) {
+        const title = document.getElementById('modalTitle');
+        const modal = document.getElementById('updateModal');
+        if(title) title.innerText = `Update: ${name}`;
+        if(modal) modal.classList.remove('hidden');
+    }
+
+    function openHistoryModal() {
+        const modal = document.getElementById('historyModal');
+        if(modal) modal.classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+        const modal = document.getElementById(id);
+        if(modal) modal.classList.add('hidden');
+    }
+
+    function triggerToast(msg) {
+        const toast = document.getElementById('customAlert');
+        const msgEl = document.getElementById('alertMsg');
+        if (!toast || !msgEl) {
+            alert(msg); // Fallback
+            return;
+        }
+        msgEl.innerText = msg;
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+            toast.classList.add('translate-y-20', 'opacity-0');
+        }, 3000);
+    }
+
+    function updateStatus(patientId, status) {
+    axios.post("/attendant/update-status", {
+        patient_id: patientId,
+        status: status
+    }, { withCredentials: true })
+    .then(() => {
+        triggerToast("Status updated");
+        loadPatients(); // refresh
+    })
+    .catch(err => console.error(err));
+}
+
+function loadTasks() {
+    axios.get("/attendant/tasks", { withCredentials: true })
+    .then(res => {
+        tasks = res.data.tasks;
+        filterTasks('all');
+    })
+    .catch(err => console.error(err));
+}
+
+    function loadPatients() {
+    axios.get("/attendant/patients", { withCredentials: true })
+    .then(res => {
+        patients = res.data.patients;
+        renderTable(patients);
+        renderFlow();
+
+        populatePatientDropdown(); // ✅ HERE
+    })
+    .catch(err => {
+        console.error("Failed to load patients", err);
+    });
+}
+    // --- 6. INITIALIZATION ---
+    window.onload = () => {
+    populateCountryCodes();
+    loadPatients();
+    loadTasks();
+    filterTasks('all');
+    loadProfile();
+    calculateAge('aDob', 'aAge');
+    populatePatientDropdown();
+};
+</script>
+</body>
+
+</html>

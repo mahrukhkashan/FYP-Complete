@@ -1,0 +1,465 @@
+ORIGINAL RESEARCH Open Access
+Descriptive analysis of sepsis in a
+developing country
+Gilbert Abou Dagher, Mothana Saadeldine, Rana Bachir, Dina Zebian and Ralphe Bou Chebl*
+Abstract
+Background: Most studies on sepsis were conducted in developed countries. The aim of this study is to report on
+a series of patients with sepsis in a tertiary hospital in a developing country.
+Methods: Patients admitted through the emergency department of a single university-based institution between
+January 2008 and June 2012, with a final diagnosis of sepsis, bacteremia, or septic shock, were retrieved. A sample
+of 97 patients was selected. Vital signs at presentation, number of SIRS criteria, use of vasopressors and steroids, and
+in-hospital mortality were recorded.
+Results: The mean age was 70.09 ± 16.82, ranging from 19 to 96 years; 48.5 % were females and 51.5 % were males;
+42.3 % of the patients were found to be bacteremic. IV fluid requirement during the first 6 h was 1.75 ± 1.96 l. The time
+for antibiotic initiation was 3.43 ± 4.48 h, with 87.6 % of the antibiotics initiated in the emergency department.
+Norepinephrine was the most commonly used vasopressor (38.1 %) followed by dopamine (8.2 %), and the inotrope
+dobutamine (4.1 %); 45.3 % of the patients were admitted to the intensive care unit (ICU), and the remaining 54.7 %
+were managed on the general practice unit (GPU). A total of 30 (30.9 %) septic patients died. The 28-day mortality was
+20.6 %. Deceased patients had greater vasopressor use, a longer stay in the ICU ( p= 0.001), and a longer time to
+norepinephrine use ( p=0 . 0 0 4 ) .
+Conclusions: This is the first study providing an in-depth analysis of sepsis patients in a developing country, looking at
+in-hospital mortality, SIRS criteria utility, and at the overall sepsis management.
+Background
+Sepsis has gained worldwide recognition in the last two
+decades. The Early Goal-Directed Therapy (EGDT)
+study introduced protocol-based care in sepsis manage-
+ment in 2001 [1], followed by the Surviving Sepsis Cam-
+paign (SSC) in 2002 [2], to the NIH-funded PROCESS
+and ARISE trials that looked at the value of such
+protocol-based intervention [3, 4]. Despite the enormous
+amount of sepsis research, the incidence of affected pa-
+tients in the USA has doubled in the past decade, and
+approximately 750,000 persons are affected annually [5],
+with one septic patient presenting to an emergency de-
+partment in the USA every minute [6]. Most sepsis stud-
+ies, whether evaluating the overall mortality of the
+disease or the benefit of a specific treatment modality,
+were done in developed countries such as the USA,Australia, and Europe. There are no studies looking at
+sepsis, the value of SIRS criteria, or its related mortality
+in a developing country. The aim of this study is to de-
+scribe the pathogens, underlying medical conditions,
+management, and mortality of patients presenting with
+sepsis at the American University of Beirut Medical Cen-
+ter (AUBMC), a 420-bed teaching hospital in Lebanon.
+Methods
+A separate study at our institution looked at sepsis in
+dialysis patients and looked at their in-hospital mortality.
+There were a total of 97 end-stage renal disease (ESRD)
+patients. The non-ESRD patient control group was sig-
+nificantly larger. A convenience sample of 97 patients
+admitted through the Emergency Department of a single
+university-based institution between January 2008 and
+June 2012, with a final diagnosis of sepsis, bacteremia, or
+septic shock, was randomly selected with the help of a
+computer-generated program. Exclusion criteria included
+age less than 18 years, pregnant, and trauma cases. After* Correspondence: rb94@aub.edu.lb
+Department of Emergency Medicine, American University of Beirut, Beirut,
+Lebanon
+© 2015 Dagher et al. This is an Open Access article distributed under the terms of the Creative Commons Attribution License
+(http://creativecommons.org/licenses/by/4.0), which permits unrestricted use, distribution, and reproduction in any medium,
+provided the original work is properly credited.Dagher et al. International Journal of Emergency Medicine  (2015) 8:19 
+DOI 10.1186/s12245-015-0068-1
+an Institutional Review Board (IRB) approval from the
+American University of Beirut, we studied that same co-
+hort of patients and looked at a variety of parameters re-
+lated to their emergency department (ED) management,
+disposition, and outcome.
+Age, gender, ethnicity, and history of comorbidities
+were obtained from the patients ’medical record. Pa-
+tients ’vital signs and number of SIRS criteria were col-
+lected at initial presentation to the emergency department.
+The site of infection, causative microorganism, and pres-
+ence of bacteremia were retrieved as well as complete
+blood count, electrolytes, lact ate, cardiac enzymes, arterial
+blood gas results, and coagulation profile results. Time to
+antibiotics and amount of fluid r esuscitation within the first
+6 and 24 h, duration and type of vasopressors, and steroids
+administration were also noted. Disposition from the ED,
+length of stay in ED, intensi ve care unit (ICU), or general
+floor, was calculated. We also looked at hospital mortality
+as well as 28-day mortality.
+Statistical analysis
+A two-tailed sample ttest compared lengths of stay in
+ED, ICU, or floor; overall length of stay in hospital; time
+to and duration of vasopressors, antibiotics, and steroids;
+fluid replacement at 6 and 24 h, and vital signs at pres-
+entation and after 6 h, between deceased patients and
+non-deceased. A Pearson ’s chi-square test was used to
+compare differences in distribution of bacteremia, ED
+disposition, use of vasopressors or steroids, and number
+of SIRS criteria at presentation between deceased pa-
+tients and non-deceased. Statistical analyses were per-
+formed using SPSS Statistics for Windows Version 21.0.
+(Armonk, NY: IBM Corp).
+Results
+Patient characteristics
+The mean age was 70.09 ± 16.82, ranging from 19 to
+96 years; 48.5 % were females and 51.5 % were males.
+The most common underlying comorbidity was hyper-
+tension (58.8 %) followed by diabetes (34.0 %) and cor-
+onary artery disease (25.8 %) (Table 1). There was no
+significant difference in comorbidity distribution be-
+tween patients presenting with a systolic blood pressure
+less or more than 90 mmHg. Systolic blood pressure
+upon presentation to the emergency department ranged
+from 53 to 180 mmHg, while it ranged from 66 to
+177 mmHg after 6 h of presentation.
+Microbiology
+Bacteremia was defined as a single positive blood culture
+showing non-skin flora pathogens or a minimum of two
+positive blood culture bottles with skin flora pathogens;
+42.3 % of the patients were found to be bacteremic. The
+most common sites of infection were genitourinaryTable 1 Baseline characteristics of the patients
+Age (years) 70.09 ± 16.8
+Sex (%)
+Female 48.5
+Male 51.5
+Chronic coexisting conditions (%)
+Hypertension 58.8
+Diabetes 34
+Coronary artery disease 25.8
+Congestive heart failure 16.9
+Chronic obstructive lung disease or emphysema 10.3
+Neurologic disease 3.1
+SIRS criteria at presentation (%)
+2 or more 67
+Less than 2 30
+Vital signs upon presentation
+Temperature (°C) 37.55 ± 1.127
+Systolic blood pressure (mmHg) 111.23 ± 27.63
+Diastolic blood pressure (mmHg) 60.81 ± 16.91
+Mean arterial pressure (mmHg) 77.27 ± 18.96
+Heart rate (beats/min) 100.43 ± 28.67
+Respiratory rate (respiration/min) 22.31 ± 6.25
+Oxygen saturation (%) 94.07 ± 6.7
+Baseline laboratory values
+White cell count (per mm3) 19.5 ± 3.34 × 10,000
+Hemoglobin 10.69 ± 2.45
+Hematocrit 32.27 ± 8.43
+Lactate (mmol/l) 3.80 ± 3.531
+Creatinine (mg/dl) 1.86 ± 1.9
+Blood urea nitrogen (mg/dl) 37.03 ± 26.29
+Total bilirubin (mg/dl) 3.08 ± 5.2
+Partial pressure of carbon dioxide (mmHg) 36.42 ± 10.8
+pH arterial blood 7.36 ± 0.13
+PaO 2/FiO 2 241.8 ± 111.54
+Bacteremia
+Yes 41
+No 56
+Site of infection (%)
+Urine 40.2
+Lung 19.6
+Unknown 19.6
+Skin 10.3
+GI 8.2
+Endocarditis 1
+Oral flora 1Dagher et al. International Journal of Emergency Medicine  (2015) 8:19 Page 2 of 6
+(40.2 %) followed by pulmonary (19.6 %) and integu-
+mentary (10.3 %). In 19.6 % of cases, no focus of infec-
+tion could be identified (Table 1). In 76 out of 97
+patients (78.4 %), a microorganism was identified with
+Gram-negative organisms exceeding the Gram-positives.
+Among the Gram-negative organisms, Escherichia coli has
+been consistently the most commonly isolated organism
+(38.1 %) followed by Klebsiella (11.3 %) and Pseudomonas
+(7.2 %). In the Gram-positive bacteremia group, coagulase-
+negative staphylococci represented the majority of the iso-
+lates (8.2 %) (Table 2). When stratified according to blood
+pressure, 38.5 % of patients with systolic blood pressureless than 90 mmHg were bacteremic in contrast to 43.5 %
+of patients with a systolic blood pressure greater than
+90 mmHg.
+Management
+IV fluid requirement during the first 6 h was 1.75 ±
+1.96 l and 3.37 ± 2.85 during the first 24 h. On the other
+hand, the time for antibiotic initiation was 3.43 ± 4.48 h,
+with 87.6 % of the antibiotics initiated in the emergency
+department (Table 3).
+The time to initiate vasopressors was 9.14 ± 8.03 h.
+Norepinephrine was the most commonly used vasopres-
+sor (38.1 %) followed by dopamine (8.2 %) and the ino-
+trope dobutamine (4.1 %). Vasopressor treatment duration
+in the first 24 h was 3.33 ± 3.411 h. Furthermore, the
+hypotensive group at presenta tion required more vasopres-
+sors than those who presented with systolic BP ≥90 mmHg.
+There was no difference in SIRS criteria between the
+hypotensive and normotensive group as 69 % of patients
+in both groups had greater than 2 SIRS criteria.
+Disposition
+Admitted to the ICU were 45.3 % of the patients, and
+the remaining 54.7 % were managed on the general prac-
+tice unit (GPU) (Table 4). The mean length of stay in
+the ED was 13.35 ± 17.15 h, while it was 12.04 ± 13.95
+and 7.27 ± 5.94 days in the ICU and GPU, respectively.
+The mean length of stay in the hospital was 13.86 ±
+13.62 days (Table 3); 73.1 % of patients with initial sys-
+tolic blood pressure less than 90 mmHg were admitted
+to the ICU.Table 2 Causative microorganisms
+Microbiology N(%)a
+Escherichia coli 37 (38.1)
+Klebsiella pneumoniae 11 (11.3)
+Coagulase-negative staphylococci 8 (8.2)
+Pseudomonas aeruginosa 7 (7.2)
+Enterococcus species 6 (6.2)
+Candida species 6 (6.2)
+Non-albicans Candida 4 (4.1)
+Proteus mirabilis 3 (3.1)
+Diphtheroids species 3 (3.1)
+Acinetobacter baumannii 2 (2.1)
+Streptococcus pneumoniae 2 (2.1)
+Others Clostridium species, Listeria monocytogenes ,
+Morganella morganii ,Brucella species,
+Providencia alcaligenes11 (11.3)
+aMore than one organism may be retrieved from a single subject
+Table 3 Patient management characteristics
+Number Mean ± SD Range
+LOS in ED (hours) 97 13.35 ± 17.154 1.00 –137.50
+LOS in ICU (days) 43 12.04 ± 13.951 0.40 –70.67
+LOS in GPU (days) 52 7.27 ± 5.941 0.33 –30.95
+LOS in the hospital (days) 97 13.86 ± 13.618 0.507 –70.917
+Time to vasopressors in the first 24 h (hours) 21 9.14 ± 8.027 0.50 –24.00
+Time to norepinephrine (hours)a36 148.20 ± 282.190 1 –1464.00
+Time to dopamine (hours)a7 278.31 ± 393.557 1 –870.50
+Time to dobutamine (hours) 4 59.50 ± 41.026 22 –114.50
+Vasopressors Tx duration (days) for those who took vasopressors in the first 24 h 21 3.33 ± 3.411 0.13 –12.88
+Steroid Tx duration (days) 47 7.55 ± 7.540 0.50 –35.00
+Time to antibiotic treatment initiation (hours)a96 3.43 ± 4.479 0.167 –36.33
+IV fluid requirement first 6 h (liters) 96 1.75 ± 1.964 0.02 –11.06
+IV fluid requirement first 24 h (liters) 96 3.37 ± 2.846 0.160 –16.642
+aThe time to norepinephrine, to dopamine, and to antibiotic treatment for one patient is missing since the paper containing this information was not fo und in the
+patient ’s chartDagher et al. International Journal of Emergency Medicine  (2015) 8:19 Page 3 of 6
+Mortality
+A total of 30 (30.9 %) septic patients died. The 28-day
+mortality was 20.6 % with 19.6 % lost to follow-up.
+There was no statistically significant difference in hos-
+pital mortality between the hypotensive and normoten-
+sive groups. There was no significant difference in mean
+age, gender distribution, and comorbidities between the
+discharged and deceased group. The percentage of
+bacteremia was significantly higher in the survival group
+(92.7 %) than in the deceased group (7.3 %).
+Deceased patients had greater vasopressor use and
+al o n g e rs t a yi nt h eI C U( p= 0.001). Time to norepin-
+ephrine was significantly longer in the deceased group
+(p=0 . 0 0 4 ) ( T a b l e 5 ) .
+Vital signs upon presentation and after 6 h, IV fluids
+requirements during the first 6 and 24 h, and time to
+initiation of antibiotics were not different between the
+two groups. Out of 30 patients who presented initially
+with less than 2 SIRS criteria, 8 died during theirhospital stay (26.7 %) (Table 5). Laboratory findings also
+were not significantly different between the two groups.
+Discussion
+Since EGDT was published, there has been a steady de-
+cline in sepsis-related mortality. The rate of hospitaliza-
+tions however has doubled during the past decade in the
+USA [7]. Although much of the therapy for severe sepsis
+occurs in ICU, as many as 500,000 cases of severe sepsis
+are initially managed in EDs annually, with an average
+ED length of stay of 5 h [5, 6, 8]. Recent research has
+shown that the most important and the cornerstone of
+sepsis therapy is early recognition, aggressive fluid hy-
+dration and early antibiotics [3, 4]. The surviving sepsis
+campaign recommends a 30 cc/kg bolus in the first 3 h
+of resuscitation [2]. Further fluid therapy is guided by
+monitoring various hemodynamic metrics such as the
+central venous pressure or the mean arterial pressure.
+The mean amount of fluids given in our cohort within
+the first 6 h was 1.75 l. There was however a statistically
+significant difference in fluid resuscitation between the
+hypotensive and normotensive group. This discrepancy
+is probably stemming from the prejudice that hypotensive
+patients are sicker. However, EGDT and SSC recommend
+aggressive hydration to both severe sepsis and septic shock
+regardless of blood pressure on presentation. Early antibi-
+otics have been shown to improve survival in septic pa-
+tients [9]. The mean time to antibiotic in our study was
+3.43 h with the majority (87.6 %) of antibiotics started in
+the emergency department. It is important to note that at
+the time the study was conducted, our institution did not
+follow yet a standardized protocol-based approach to sep-
+sis management, which would explain why most sepsis re-
+suscitation goals were not met.
+According to the literature, the most common infec-
+tion sites in septic patients are the respiratory and geni-
+tourinary systems as well intra-abdominal surgical
+infections and indwelling catheters [5]. The most com-
+mon focus of infection in our population was the genito-
+urinary system with Gram-negative organisms being the
+most predominant culprits. This is in accordance with a
+previous study done in our institution looking at
+bacteremia in febrile neutropenia patients that showed
+the growing incidence of Gram-negative organisms [10].
+Septic shock is one of the leaders in mortality now-
+adays, but with early recognition and treatment, we have
+seen an improvement in septic shock mortality [2]. The
+mortality from septic shock was found to be as high as
+46 % in the original EGDT control group, but the imple-
+mentation of protocols aiming at early identification and
+aggressive care has lead to an improved survival, and
+nowadays the mortality from septic shock ranges be-
+tween 20 and 30 % [1, 2, 11]. To the best of our know-
+ledge, there is one study that looked at sepsis and its tollTable 4 Disposition of septic patients
+Number Percent
+Admissiona
+ICU 43 45.3
+GPU 52 54.7
+Hospital mortality 30 30.9
+Discharge home 67 69.1
+28-day mortality
+Yes 20 20.6
+Unknown 19 19.6
+aTwo patients have not been admitted as one of them left AMA and the other
+one died in the ED
+Table 5 Patient mortality characteristics
+Mortality (no) Mortality (yes)
+pvalue
+N % N %
+Norepinephrine 17 45.9 20 54.1 <0.001
+Dopamine 3 37.5 5 62.5 0.044
+Steroid use 25 53.2 22 46.8 0.001
+Antibiotics initiated in ED 61 71.8 24 28.2 0.127
+Antibiotics initiated in ICU 2 33.3 4 66.7 0.248
+Antibiotics initiated in GPU 4 53.2 2 46.8 0.248
+SIRS
+0 or 1 22 73.3 8 26.7 0.543
+≥2 45 67.2 22 32.8
+Bacteremia
+No 29 51.8 27 48.2 <0.001
+Yes 38 92.7 3 7.3
+ICU admission 24 55.8 19 44.2 0.012
+GPU admission 42 80.8 10 19.2 0.007Dagher et al. International Journal of Emergency Medicine  (2015) 8:19 Page 4 of 6
+in the Middle East. Memon et al. looked at the impact
+of a 6-h resuscitation bundle on sepsis outcome in a
+Saudi Arabian intensive care unit and found a reduction
+in mortality in septic patients from 31 to 21 % [12]. In
+our cohort, the hospital mortality was 30.9 % and the
+28-day mortality was 20.6 %. It was interesting to note
+that there was no significant mortality difference be-
+tween the normotensive and hypotensive patients at
+presentation.
+There are a limited amount of ICU beds at our institu-
+tion. Very often, patients requiring ICU stay tend to re-
+main in the ED for a prolonged time until a bed is
+available. Should these patients improve during their ED
+stay, they are downgraded to a GPU bed. This in part
+explains our long ED length of stay and our high GPU
+admission rate. Our GPU beds are not equipped with
+continuous monitoring. Vital signs are taken every 4 –
+6 h. Vasopressors, antibiotics, and non-invasive ventila-
+tion can be initiated on the GPU. Further invasive
+hemodynamic monitoring (CVP, arterial lines) occurs in
+the critical care units. Of all the patients who were ad-
+mitted to the GPU, 10 passed away. They were stepped
+up to an ICU bed and eight of them were successfully
+moved to the MICU. The two remaining patients passed
+away on the wards after their families requested to make
+them comfort care. Overall, patients admitted to the
+ICU had a greater mortality, and this can be explained
+by the fact that sicker patients are usually admitted to
+critical care units.
+The SIRS criteria were initially proposed as a screen-
+ing method to rapidly flag possible septic patients, as
+sepsis is defined as having 2 or more SIRS criteria in the
+setting of a presumed or documented infection. Even
+though they were sensitive, SIRS criteria were not spe-
+cific and did not correlate with mortality [13]. Owing to
+the fact that our study was a retrospective one, we se-
+lected patients based on their discharge diagnosis and
+wanted to look at the value of the SIRS criteria at pres-
+entation. It is interesting that in our study, 27 % of pa-
+tients who presented with less than 2 SIRS criteria died
+within their hospital stay. Emergency physicians should
+be aware of this and should maintain a high level of sus-
+picion when caring for septic patients presenting with
+normal vital signs.
+Limitations
+This is a retrospective study done in a single emergency
+department, and as such, our study has many limita-
+tions. Some of the patients did not have repeat vitals at
+6 h, and lactate was not drawn on all patients as our in-
+stitution began measuring lactate on septic patients
+fairly recently. Our sample size is small and there was a
+significant amount of patients who were lost to follow-
+up. Furthermore, information regarding initial EDdisposition or whether patients were stepped up to an
+ICU level bed was not available. This can be explained
+by our institution ’s use of paper-based medical records
+at the time of the study, which might have lead to the
+loss of some patient information.
+Conclusions
+This is the first study looking at an in-depth analysis of
+sepsis in the Middle Eastern population and examining
+the overall management of septic patients and their in-
+hospital mortality in a single tertiary care center in
+Beirut, Lebanon, prior to the initiation of a protocol-
+based approach. Although our mortality rate was in the
+range of the Western world, it will be very interesting to
+see the effect of sepsis treatment bundles advocating for
+early recognition, aggressive hydration, and early antibi-
+otics on sepsis-related mortality.
+We hope that it will stimulate further prospective
+studies on sepsis in the Middle East and other develop-
+ing countries with limited healthcare resources.
+Competing interests
+The authors declare that they have no competing interests.
+Authors ’contributions
+GAD and RBC have made substantial contributions to the conception and
+design of the study. RB, MS, and DZ have made substantial contributions to
+the acquisition of data, analysis, and interpretation of data. GAD, RBC, and
+MS have been involved in drafting the manuscript. GAD and RBC revised the
+manuscript critically for important intellectual content. GAD and RBC have
+given final approval of the version to be published. All authors read and
+approved the final manuscript.
+Acknowledgements
+The authors have no source of funding to declare.
+Received: 18 February 2015 Accepted: 28 May 2015
+References
+1. Rivers E, Nguyen B, Havstad S, Ressler J, Muzzin A, Knoblich B, et al. Early
+goal-directed therapy in the treatment of severe sepsis and septic shock. N
+Engl J Med. 2001;345(19):1368 –77.
+2. Levy MM, Dellinger RP, Townsend SR, Linde-Zwirble WT, Marshall JC, Bion J,
+et al. The Surviving Sepsis Campaign: results of an international
+guideline-based performance improvement program targeting severe
+sepsis. Crit Care Med. 2010;38(2):367 –74.
+3. Pro CI, Yealy DM, Kellum JA, Huang DT, Barnato AE, Weissfeld LA, et al. A
+randomized trial of protocol-based care for early septic shock. N Engl J
+Med. 2014;370(18):1683 –93.
+4. The AI. the ACTG. Goal-directed resuscitation for patients with early septic
+shock. N Engl J Med. 2014;371(16):1496 –506.
+5. Angus DC, Linde-Zwirble WT, Lidicker J, Clermont G, Carcillo J, Pinsky MR.
+Epidemiology of severe sepsis in the United States: analysis of incidence,
+outcome, and associated costs of care. Crit Care Med. 2001;29(7):1303 –10.
+6. Wang HE, Shapiro NI, Angus DC, Yealy DM. National estimates of severe
+sepsis in United States emergency departments. Crit Care Med.
+2007;35(8):1928 –36.
+7. Gaieski DF, Edwards JM, Kallan MJ, Carr BG. Benchmarking the incidence
+and mortality of severe sepsis in the United States. Crit Care Med.
+2013;41(5):1167 –74.
+8. Puskarich MA, Marchick MR, Kline JA, Steuerwald MT, Jones AE. One year
+mortality of patients treated with an emergency department based early
+goal directed therapy protocol for severe sepsis and septic shock: a before
+and after study. Crit Care. 2009;13(5):R167.Dagher et al. International Journal of Emergency Medicine  (2015) 8:19 Page 5 of 6
+9. Gaieski DF, Mikkelsen ME, Band RA, Pines JM, Massone R, Furia FF, et al.
+Impact of time to antibiotics on survival in patients with severe sepsis or
+septic shock in whom early goal-directed therapy was initiated in the
+emergency department. Crit Care Med. 2010;38(4):1045 –53.
+10. Kanafani ZA, Dakdouki GK, El-Chammas KI, Eid S, Araj GF, Kanj SS.
+Bloodstream infections in febrile neutropenic patients at a tertiary care
+center in Lebanon: a view of the past decade. Int J Infect Dis.
+2007;11(5):450 –3.
+11. Kaukonen KM, Bailey M, Suzuki S, Pilcher D, Bellomo R. Mortality related to
+severe sepsis and septic shock among critically ill patients in Australia and
+New Zealand, 2000 –2012. JAMA. 2014;311(13):1308 –16.
+12. Memon JI, Rehmani RS, Alaithan AM, El Gammal A, Lone TM, Ghorab K,
+et al. Impact of 6-hour sepsis resuscitation bundle compliance on hospital
+mortality in a Saudi hospital. Crit Care Res Pract. 2012;2012:273268.
+13. Jaimes F, Garces J, Cuervo J, Ramirez F, Ramirez J, Vargas A, et al. The
+systemic inflammatory response syndrome (SIRS) to identify infected
+patients in the emergency room. Intensive Care Med. 2003;29(8):1368 –71.
+Submit your manuscript to a 
+journal and beneﬁ  t from:
+7 Convenient online submission
+7 Rigorous peer review
+7 Immediate publication on acceptance
+7 Open access: articles freely available online
+7 High visibility within the ﬁ  eld
+7 Retaining the copyright to your article
+    Submit your next manuscript at 7 springeropen.comDagher et al. International Journal of Emergency Medicine  (2015) 8:19 Page 6 of 6

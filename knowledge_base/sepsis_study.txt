@@ -1,0 +1,206 @@
+Research Article
+A Descriptive Study on Sepsis: Causes, Outcomes, and
+Adherence to Guidelines on Patients with Sepsis at a Tertiary CareHospital in Sri Lanka
+A. T. Matthias , J. Indrakumar , Tharushi Ranasinghe , Shalini Wijekoon ,
+and Charuni Yashodara
+University of Sri Jayewardenepura, Sri Lanka
+Correspondence should be addressed to A. T. Matthias; thushara.matthias@sjp.ac.lkReceived 4 February 2020; Accepted 9 June 2020; Published 15 July 2020Academic Editor:
+Raymond Pitetti
+Copyright © 2020 A. T. Matthias et al. This is an open access article distributed under the Creative Commons Attribution License,
+which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited.
+The global incidence of sepsis is increasing, and mortality remains high. The mortality is even higher in resource-poor countries
+where facilities and equipment are limited. The Surviving Sepsis Campaign (SSC) recommends an updated hour-1 bundle based
+on the evidence from the International Guidelines for Management of Sepsis and Septic Shock 2018. To reduce mortality fromsepsis, compliance with the “bundle” is essential. Data from developing countries like Sri Lanka on the management of sepsis
+according to the SSC guidelines are not available. Hence, this study looks at the patient characteristics and management ofseptic patients at a tertiary care hospital in Sri Lanka. Patients admitted to the University Medical Unit of Colombo SouthTeaching Hospital from January to August 2019 ful ﬁlling the inclusion criteria were included. The hour-1 sepsis bundle
+adherence, demographic data, and management were recorded. There were 387 patients: 163 males and 224 females. The age
+range was 15-95 with a mean age of 63. 83.7% were direct admissions while 16.3% were transfers from a peripheral hospital.
+The most common source of infection was urine (82 (21.2%)) followed by blood stream (105 (27.1%)) and skin and soft tissue(114 (29.5%)). One-hour SSC bundle compliance is as follows: administration of intravenous ﬂuids: 42 (10.9%), blood cultures
+before antibiotics: 225 (58.1%), ﬁrst dose antibiotic: 15 (3.9%), and arterial blood gas: 60 (15.5%). Sta ﬃng capacity did not make
+ad iﬀerence to adherence to the bundle. The study mortality rate was 37 (9.6%). Binary logistic regression indicates that quick
+sequential organ failure assessment (qSOFA) score is a signiﬁ cant predictor of mortality ( chi‐square = 35 :08,df = 3, and p=
+0:001(<0.05)) with an odds ratio (OR) of 7.529 (95% CI 3.597-14.323). The other predictors, age, sex, adherence to sepsis care
+bundle, and comorbidities, were not signiﬁ cant. In conclusion, mortality of sepsis is high and adherence to sepsis care bundle is
+poor in Sri Lanka even at a tertiary care hospital. Education and training of staﬀ are needed to boost adherence. This will in
+turn improve quality of care and outcomes of septic patients in resource-poor countries.
+1. Introduction
+Sepsis is de ﬁned as an overwhelming and potentially life-
+threatening in ﬂammatory response of the body to infection
+resulting in organ dysfunction and death causing signi ﬁcant
+morbidity and mortality[1]. The de ﬁnition of sepsis has
+changed over the years with various criteria used for diagno-
+sis such as surviving sepsis criteria and qSOFA [2].
+Sepsis is a major burden on the healthcare system of any
+country. Sepsis incidence rates are up to 535 cases per
+100,000 person-years and rising[3]. In-hospital mortalityremains high at 25–30%. The majority of these are in low-and middle-income countries (LMICs) [4]. In a multicentrestudy, it was revealed that sepsis in Southeast Asia has a highmortality [5]. There is paucity of data regarding sepsis inSri Lanka.
+Toﬁght the battle against sepsis, the Surviving Sepsis
+Campaign, a collaboration between the European Society of
+Intensive Care Medicine, the Society of Critical Care Medi-
+cine, and the International Sepsis Forum, was formed inOctober 2002. The campaign issued a consensus statementin 2004, the ﬁrst Surviving Sepsis Campaign guideline [4].Hindawi
+BioMed Research International
+Volume 2020, Article ID 7971387, 4 pages
+https://doi.org/10.1155/2020/7971387
+
+Over the years, several updates have been done to optimize
+the diagnosis and management of sepsis. The concept of carebundles was developed so as to improve the compliance toguidelines. Taking into account the current internationaland local guidelines on sepsis, the four major pillars of sepsisare blood culture, antibiotics, arterial blood gas (ABG), andﬂuid therapy[6]. In response to the publication of “Surviving
+Sepsis Campaign: International Guidelines for Managementof Sepsis and Septic Shock: 2016 [7], ”a revised “hour-1 bun-
+dle”was introduced in “The Surviving Sepsis Campaign
+Bundle: 2018 Update ”[8] by the introduction of a one-hour
+bundle instead of the previously published 3-hour and 6-hour bundles of care, keeping in line with the latest scienti ﬁc
+evidence.
+Since limited research has been done regarding sepsis in
+Sri Lanka, this research was conducted as a descriptive studybased on the patients with sepsis in a major tertiary care unitin the country. It will provide valuable insight into the char-acteristics of patients diagnosed with sepsis and adherence toSurviving Sepsis Campaign guidelines, help in evaluating theclinical outcomes of septic patients, and thus improve the
+quality of care.
+2. Methodology
+2.1. Study Design. This study was a descriptive cohort study
+conducted prospectively at Colombo South Teaching Hospi-
+tal (CSTH). CSTH is a tertiary care unit situated in the southof Colombo and is the study setting selected for the study.
+The selected hospital consists of 1100 beds.
+In this cross-sectional study, we prospectively recruited
+patients aged ≥18 years with suspected or documented sepsis
+fulﬁlling the qSOFA ≥2criteria as rede ﬁned by a task force
+convened by national societies including the Society of Crit-
+ical Care Medicine (SCCM) and the European Society ofIntensive Care Medicine (ESICM) termed sepsis-3[9] admit-ted to University Medical Unit, CSTH. The patients not ful-ﬁlling the new sepsis criteria, those aged <18, those
+mentally unsound, and those unwilling to provide consentare excluded from the study.
+The study was conducted from January 2019 to June
+2019.
+All details were gathered from the Bed Head Tickets
+(BHTs) and recorded in a data sheet by trained researchassistants. Patients were contacted at 30 days to review theoutcomes.
+2.2. De ﬁnitions. Patient ’s demographics were de ﬁned as age
+and sex.
+Sepsis: life-threatening organ dysfunction caused by a
+dysregulated host response to infection.
+Organ dysfunction : an acute change in total sequential
+organ failure assessment (SOFA) scores ≥2 points conse-
+quent to the infection.
+Clinical criteria to identify septic shock: sepsis with per-
+sisting hypotension requiring vasopressors to maintain
+MAP ≥65 mmHg and having a serum lactate > 2 mmol/L
+despite adequate volume resuscitation.Time zero : the time of diagnosis of sepsis. This is the time
+from which 1 h, 3 h, and 6 h were counted to see whether themanagement of sepsis within this period was done accordingto the guideline. qSOFA score at the time of diagnosis wasmeasured.
+The statistics were assessed by SPSS Version 17. Categor-
+ical variables are described using frequencies. Continuousvariables are described as mean and standard deviation ifnormally distributed or median and interquartile range if
+not. We used logistic regression models to assess the factors
+associated with mortality.
+3. Results
+3.1. Demography. There were 387 patients: 163 males and 224
+females. The age range was 15-95 with a mean age of 63.
+3.2. Admissions. 83.7% were direct admissions to CSTH while
+16.3% were transfers from a peripheral hospital. The 30-day
+readmission was 3 (0.7%) and was due to reasons not relatedto sepsis or the index admission.
+3.3. Characteristics of Sepsis. The most common source of
+infection was urine (82 (21.2%)) followed by blood stream
+(105 (27.1%)) and skin and soft tissue (114 (29.5%)). qSOFAwas one in 124 (32%), two in 162 (41.9%), and three in 46(11.9%).
+3.4. Surviving Sepsis Bundle Compliance. One-hour SSC bun-
+dle compliance is as follows: administration of intravenous
+ﬂuids: 42 (10.9%), blood cultures before antibiotics: 225
+(58.1%), ﬁrst dose antibiotic: 15 (3.9%), and arterial blood
+gas: 60 (15.5%). Inotropes were given to 61 (15.8%) patientswithin the ﬁrst 6 hours.
+Staﬃng capacity did not make a di ﬀerence to adherence
+to the bundle.
+3.5. Mortality. The study mortality rate was 37 (9.6%). Binary
+logistic regression indicates that quick sequential organ fail-
+ure assessment score (qSOFA) is a signi ﬁcant predictor of
+mortality ( chi‐square = 35: 08,df = 3 , and p=0 :001(<0.05))
+with an odds ratio (OR) of 7.529 (95% CI 3.597-14.323).The other predictors, age, sex, adherence to sepsis care bun-dle, and comorbidities, were not signi ﬁcant.
+4. Discussion
+The mean age in our study was 63 which was slightly olderthan the MOSAICS cohort of 59.2 years [10] and was sim-ilar to the international cohort with a mean age of 64 years[11]. The comorbidities which were common in the cohortincluded DM (182 (46.8%)), HPT (135 (34.7)), IHD (107(27.5)), and CKD (95 (24.4)).
+The overall bundle adherence in our study was poor. In a
+study done in Asia, the compliance to the severe sepsis resus-citation bundle was low, similar to studies in Europe andNorth America [10, 12] According to many multicentre tri-
+als, a survival bene ﬁt was seen with adherence to the severe
+sepsis/septic shock management bundle [10, 13]. Many stud-
+ies support the e ﬃcacy of the intervention bundles in the2 BioMed Research International
+management of patients with sepsis. One study showed that
+patients whose care included compliance with all of thesemetrics had a 40% reduction in the odds of dying in the hos-pital with the 3 h bundle and 36% for the 6 h bundle [14].
+One critical factor in the treatment of sepsis is the admin-
+istration of antibiotics to target the underlying cause of infec-tion. The choice of antibiotics depends on the source ofinfection and local antibiotic guidelines. The very poor rateof administration of antibiotics (3.9%) in our study is devas-
+tating. Similar studies done to audit the bundle adherence
+have found higher rates of antibiotic administration such as76% (344/454) [15]. However, the blood cultures were takenin more than half the population before antibiotics and thisindicates that they have understood the need for proper cul-tures and administration of antibiotics as soon as possible.Therefore, the delay in the administration of antibioticsseems to be the key factor that needs rectifying. This can beachieved through greater emphasis on implementing theSSC 1-hour bundle through educational programs.
+Intravenous ﬂuid was given in 10.9%. This is also low
+compared to other studies (50%) and administration of
+adrenergic agents in 71% of patients with hypotension
+(135/191) [16].
+The compliance rate for ﬂuids in MOSAICS was 81.4%
+[10]. MOSAICS was a large trial. One of the di ﬃculties of
+achieving this target requires early identi ﬁcation of hypoten-
+sion to initiate ﬂuid challenge. Most patients in our study
+were diagnosed in the acute general medical wards whereintensive hourly monitoring of blood pressure wasunfeasible.
+In our study, 69 (17.7%) had low BP, and out of them,
+inotropes have been given to 61 (15.1%). This is good com-pliance with the guideline. The timing of administration of
+inotropes has to improve.
+The study mortality rate was 37%. The hospital mortality
+rate of the study was 26.8% in a cohort of ICU admissions in
+Hong Kong, and in the large MOSAICS trial, it was 44.5%. Ina multicentre trial done in Asia, the mortality rate was 13%but the bundle adherence in this study was not studied. In alarge study by Lie et al. [15], the di ﬀerence in mortality is
+multifactorial. The principal di ﬀerence for the mortality to
+be high could be attributed to poor administration of antibi-otics early[10].
+4.1. Limitations and Generalisability. The limitation of this
+study includes the small sample size. As it was done over a
+period of few months at a tertiary care unit, the results canbe generalised to a large degree.
+5. Conclusions
+The adherence to Surviving Sepsis Campaign bundles needs
+to improve in our setting. This would in turn reduce mortal-
+ity associated with sepsis.
+Data Availability
+The data used to support the ﬁndings of this study are avail-
+able from the corresponding author upon request.Consent
+All patients/family members were properly educated aboutthe study prior to recruitment. The participants wereinformed about the research study in detail in their respectivelanguage, and informed written consent was obtained.
+Disclosure
+Invasive or risk procedures were not involved in this study.Each questionnaire was categorized under a serial numberto ensure anonymity. This serial number was used through-out the process of data collection and analysis. All the datacollected will be kept and used strictly con ﬁdentially and will
+be treated the same after the study as well.
+Conflicts of Interest
+The authors declare that there is no con ﬂict of interest
+regarding the publication of this paper.
+References
+[1]Deﬁnition of sepsis - Sepsis Alliance, January 2019, https://www
+.sepsis.org/sepsis-basics/what-is-sepsis/.
+[2] P. E. Marik and A. M. Taeb, “SIRS, qSOFA and new sepsis def-
+inition, ”Journal of Thoracic Disease , vol. 9, no. 4, pp. 943 –945,
+2017.
+[3] A. J. Walkey, T. Lagu, and P. K. Lindenauer, “Trends in sepsis
+and infection sources in the United States: a population-based
+study, ”Annals of the American Thoracic Society , vol. 12, no. 2,
+pp. 216–220, 2015.
+[4] C. Fleischmann, A. Scherag, N. K. J. Adhikari et al., “Assess-
+ment of global incidence and mortality of hospital-treated sep-sis. Current estimates and limitations, ”American Journal of
+Respiratory and Critical Care Medicine , vol. 193, no. 3,
+pp. 259–272, 2016.
+[5] A. D. Limmathurotsakul, “Causes and outcomes of Sepsis in
+Southeast Asia: a multinational multicentre cross-sectional
+study, ”The Lancet Global Health , vol. 5, no. 2, pp. e157 –
+e167, 2017.
+[6] UK NICE guidelines, Sepsis: recognition, diagnosis and early
+management , 2016, https://www.nice.org.uk/guidance/ng51.
+[7] A. Rhodes, L. E. Evans, W. Alhazzani et al., “Surviving Sepsis
+Campaign: international guidelines for management of sepsis
+and septic shock: 2016, ”Critical Care Medicine , vol. 45,
+no. 3, pp. 486 –552, 2017.
+[8] M. M. Levy, L. E. Evans, and A. Rhodes, “The Surviving Sepsis
+Campaign bundle: 2018 update, ”Intensive Care Medicine ,
+vol. 44, no. 6, pp. 925 –928, 2018.
+[9] M. Singer, C. S. Deutschman, C. W. Seymour et al., “The third
+international consensus de ﬁnitions for sepsis and septic shock
+(sepsis-3),” Journal of the American Medical Association ,
+vol. 315, no. 8, pp. 801–810, 2016.
+[10] J. Phua, Y. Koh, B. Du et al., “Management of severe sepsis in
+patients admitted to Asian intensive care units: prospectivecohort study, ”BMJ, vol. 342, no. jun13 1, article d3245, 2011.
+[11] C. Alberti, C. Brun-Buisson, H. Burchardi et al., “Epidemiol-
+ogy of sepsis and infection in ICU patients from an interna-
+tional multicentre cohort study,” Intensive Care Medicine ,
+vol. 28, no. 2, pp. 108 –121, 2002.3 BioMed Research International
+[12] J. K. Hing Chan and Y. L. E. Leung, “A retrospective study on
+the compliance with Surviving Sepsis Campaign guideline in
+patients with sepsis admitted to intensive care unit in HongKong, ”Journal of Intensive and Critical Care , vol. 3, no. 4,
+2017.
+[13] P. K. Milano, S. A. Desai, E. A. Eiting, E. F. Hofmann, C. N.
+Lam, and M. Menchine, “Sepsis bundle adherence is associated
+with improved survival in severe sepsis or septic shock, ”The
+Western Journal of Emergency Medicine , vol. 19, no. 5,
+pp. 774 –781, 2018.
+[14] A. Rhodes, G. Phillips, R. Beale et al., “The Surviving Sepsis
+Campaign bundles and outcome: results from the Interna-tional Multicentre Prevalence Study on Sepsis (the IMPreSS
+study), ”Intensive Care Medicine , vol. 41, no. 9, pp. 1620 –
+1628, 2015.
+[15] K. C. Lie, f. S. A. I. D. C. R. Network, C.-Y. Lau, N. V. V. Chau,
+T. E. West, and D. Limmathurotsakul, “Utility of SOFA score,
+management and outcomes of sepsis in Southeast Asia: a mul-
+tinational multicenter prospective observational study, ”Jour-
+nal of Intensive Care , vol. 6, no. 1, 2018.4 BioMed Research International

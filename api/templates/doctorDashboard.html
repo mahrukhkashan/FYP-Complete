@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClinicianHub | Integrated Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root {
+    --primary-teal: #23ae96; 
+    --light-teal: #e6f9f7;
+    --dark-text: #333333;
+    --medium-text: #666666;
+    --light-bg: #f5fafd;
+    --white: #ffffff;
+    --red-alert: #ff6347;
+    --moderate-risk: #ffc107;
+    --color-divider: #EAEAEA;
+    --overlay: rgba(0,0,0,0.4);
+    --sidebar-width: 260px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    display: flex;
+    background: var(--light-bg);
+    color: var(--dark-text);
+    font-family: 'Inter', sans-serif;
+    height: 100%;
+}
+/* Fix for native browser pickers (Time/Date) */
+input[type="date"], input[type="time"], input[type="checkbox"], input[type="radio"] {
+    accent-color: var(--primary-teal);
+}
+
+/* Sidebar Navigation */
+.sidebar {
+    width: 260px;
+    background: var(--white);
+    border-right: 1px solid var(--color-divider);
+    display: flex;
+    flex-direction: column;
+    padding: 30px 0;
+}
+
+.sidebar h2 {
+    padding: 0 25px 30px;
+    color: var(--primary-teal);
+    font-weight: 800;
+    font-size: 1.4rem;
+}
+
+.nav-item {
+    padding: 14px 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--medium-text);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    border-left: 4px solid transparent;
+}
+
+.nav-item:hover { background: var(--light-teal); color: var(--primary-teal); }
+.nav-item.active { 
+    background: var(--light-teal); 
+    color: var(--primary-teal); 
+    border-left-color: var(--primary-teal); 
+}
+
+/* Main Content */
+
+.view-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    width: 100%;
+    max-width: 1100px;
+}
+
+/* Appointments UI */
+.search-container {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 15px 12px 40px;
+    border: 1px solid var(--color-divider);
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+}
+
+.search-container i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--medium-text);
+}
+
+.appointment-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: var(--white);
+    border: 1px solid var(--color-divider);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    transition: 0.2s;
+}
+
+.appointment-card:hover {
+    border-color: var(--primary-teal);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.patient-info b { font-size: 16px; color: var(--dark-text); }
+.patient-info p { font-size: 13px; color: var(--medium-text); margin-top: 6px; display: flex; align-items: center; gap: 12px; }
+
+/* Calendar/Clock Icon Colors - Changed to primary teal as requested */
+.patient-info i { color: var(--primary-teal); font-size: 14px; }
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-confirmed { background: #e3f2fd; color: #1976d2; }
+.status-pending { background: #fff3e0; color: #f57c00; }
+.status-completed { background: #e8f5e9; color: #388e3c; }
+
+/* Buttons */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+}
+
+.btn-add { background: var(--primary-teal); color: white; }
+.btn-add:hover { background: #1d8e7b; }
+
+.btn-edit { background: var(--light-bg); color: var(--medium-text); margin-right: 8px; }
+.btn-edit:hover { background: #e0eaf0; }
+
+.btn-delete { background: #fff5f5; color: var(--red-alert); }
+.btn-delete:hover { background: #ffebeb; }
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--overlay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+#form-modal .modal-card {
+    width: 100%;
+    max-width: 520px;  /* keeps it centered & not too wide */
+    margin: auto;
+}
+.card, .modal-card, .modal {
+    margin: 20px auto;   /* 🔥 space from all sides */
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+.modal-card {
+    background: white;
+    width: 450px;
+    padding: 40px 35px;
+    border-radius: 18px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    position: relative;
+    margin: auto;
+}
+
+.modal-card h3 { margin-bottom: 20px; font-weight: 700; color: var(--dark-text); }
+
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--medium-text); margin-bottom: 8px; }
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid var(--color-divider);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+}
+
+.form-control:focus { border-color: var(--primary-teal); }
+
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 25px; }
+
+.hidden { display: none !important; }
+
+/* Custom Modal for Confirmation (replacing native alert/confirm) */
+#confirm-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--overlay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+/* Sidebar Navigation */
+.sidebar {
+    width: 260px;
+    background: var(--white);
+    border-right: 1px solid var(--color-divider);
+    display: flex;
+    flex-direction: column;
+    padding: 30px 0 20px 0;
+    z-index: 10;
+}
+
+.sidebar-header { padding: 0 25px 30px; }
+.sidebar-header h2 { font-size: 1.4rem; color: var(--primary-teal); font-weight: 800; }
+
+.nav-item {
+    padding: 14px 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--medium-text);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    border-left: 4px solid transparent;
+}
+.nav-item i { width: 20px; font-size: 16px; }
+.nav-item:hover { background: var(--light-teal); color: var(--primary-teal); }
+.nav-item.active { background: var(--light-teal); color: var(--primary-teal); border-left-color: var(--primary-teal); }
+
+.logout-wrapper { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--color-divider); }
+.nav-logout { color: var(--red-alert) !important; }
+
+/* Layout & Cards */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Form Elements */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.form-group { margin-bottom: 5px; }
+.form-group.full-width { grid-column: span 2; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--medium-text); }
+.form-control { width: 100%; padding: 12px 15px; border: 1.5px solid #23ae96; border-radius: 10px; background: #ffffff;color: #23ae96; font-size: 14px;font-weight: 500; outline: none; transition: all 0.2s; }
+select.form-control {
+    appearance: none;
+    -webkit-appearance: none;
+    /* This SVG encoded arrow uses %2323ae96 (Teal) */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2323ae96' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 15px) center;
+    padding-right: 40px;
+    cursor: pointer;
+}
+/* Phone Input Group */
+.phone-input-group { display: flex; gap: 10px; }
+.country-select { width: 120px !important; }
+/* Essential Reset for Full-Height Layout */
+        * { box-sizing: border-box; }
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            
+            background: var(--light-bg);
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            width: 100vw;
+            height: 100%;
+        }
+
+        /* Sidebar: Fixed left */
+        .sidebar {
+            height: 100%;
+            background: var(--white);
+            border-right: 1px solid var(--border-divider);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .logo-container {
+            padding: 30px 25px;
+            font-weight: 800;
+            font-size: 22px;
+            color: var(--primary-teal);
+            line-height: 1.2;
+        }
+
+        .nav-item {
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--medium-text);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--primary-teal);
+            background: var(--light-teal);
+            border-right: 3px solid var(--primary-teal);
+        }
+
+        .nav-item:hover:not(.active) {
+            background: #f1f5f9;
+        }
+
+        /* Main Content: Resolved the squeezing issue */
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+    min-height: 0;     /* 🔥 REQUIRED *//
+}
+
+        /* Custom Scrollbar */
+        .main::-webkit-scrollbar {
+            width: 8px;
+        }
+        .main::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .main::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .main::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Content Wrapper - Fixed sizing to prevent the "half-screen" look */
+        .content-inner {
+            padding: 48px 60px;
+            width: 100%;
+            max-width: none;
+            margin: 0 ;
+        }
+
+        .settings-header {
+            margin-bottom: 40px;
+        }
+
+        .settings-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            color: #0f172a;
+        }
+
+        .settings-header p {
+            color: var(--medium-text);
+            font-size: 16px;
+            margin: 0;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 1100px;
+        }
+        #settings-view {
+    width: 100%;
+    min-height: 100%;
+    overflow-y: auto;
+    padding-bottom: 80px;
+    box-sizing: border-box;
+}
+.content-view {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;   /* 🔥 breathing space inside every view */
+    box-sizing: border-box;
+}
+#form-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;   /* 🔥 gives space from screen edges */
+    z-index: 1000;
+}
+
+        .card-header {
+            padding: 24px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .card-header i {
+            color: var(--primary-teal);
+            font-size: 20px;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        /* Layout Grid - Improved for better spacing */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .form-control {
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            font-size: 15px;
+            width: 100%;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-teal);
+            box-shadow: 0 0 0 4px rgba(35, 174, 150, 0.08);
+        }
+
+        .form-control[readonly] {
+            background: #f8fafc;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary { background: var(--primary-teal); color: white; }
+        .btn-primary:hover { background: #1d8e7b; }
+
+        .btn-secondary { background: #f1f5f9; color: #475569; }
+        .btn-secondary:hover { background: #e2e8f0; }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-teal);
+            margin-top: 2px;
+        }
+
+        .checkbox-text h4 { margin: 0; font-size: 15px; color: #1e293b; }
+        .checkbox-text p { margin: 4px 0 0 0; font-size: 13px; color: var(--medium-text); }
+
+        .footer-spacer {
+            height: 80px; 
+        }
+.footer-actions {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;  /* 🔥 pushes buttons right */
+    padding: 20px 0;
+}
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e293b;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        @media (max-width: 900px) {
+            .content-inner { padding: 30px 20px; }
+            .sidebar { width: 80px; }
+            .logo-container, .nav-text { display: none; }
+            .nav-item { justify-content: center; padding: 15px; }
+        }
+/* Components */
+.patients-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
+.patient-card { background: var(--white); padding: 20px; border-radius: 16px; border: 1px solid var(--color-divider); cursor: pointer; transition: 0.3s; display: flex; justify-content: space-between; align-items: center; }
+.patient-card:hover { transform: translateY(-3px); border-color: var(--primary-teal); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+
+.view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+.search-bar { position: relative; width: 300px; }
+.search-bar input { width: 100%; padding: 10px 15px 10px 35px; border: 1px solid var(--color-divider); border-radius: 10px; outline: none; background: var(--white); }
+.search-bar i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--medium-text); }
+
+.btn-save { background: var(--primary-teal); color: #fff; padding: 12px 24px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+.btn-back { background: transparent; border: 1px solid var(--color-divider); color: var(--medium-text); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px;}
+.btn-group {
+    display: flex;
+    gap: 10px;
+}
+/* Clinical Data Presentation */
+.demographics { display: flex; gap: 40px; margin-bottom: 30px; border-bottom: 1px solid var(--color-divider); padding-bottom: 25px; }
+.demo-item span { display: block; font-size: 11px; text-transform: uppercase; color: var(--medium-text); font-weight: 700; margin-bottom: 5px; }
+.risk-summary { display: flex; align-items: center; background: #e6fffa; padding: 25px; border-radius: 15px; margin-bottom: 30px; }
+.score-circle { width: 80px; height: 80px; border-radius: 50%; border: 8px solid #eee; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; margin-right: 25px; background: #fff; }
+.badge { padding: 6px 14px; border-radius: 20px; color: #fff; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-top: 8px; display: inline-block; }
+
+.report-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid var(--color-divider); }
+.tab-btn { padding: 12px 20px; cursor: pointer; font-weight: 600; font-size: 14px; color: var(--medium-text); border-bottom: 3px solid transparent; }
+.tab-btn.active { color: var(--primary-teal); border-bottom-color: var(--primary-teal); }
+
+/* Timeline UI */
+.timeline-item { position: relative; padding-left: 25px; padding-bottom: 20px; border-left: 2px solid var(--color-divider); }
+.timeline-item::after { content: ''; position: absolute; left: -7px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--primary-teal); border: 2px solid white; }
+
+/* Analytics Chart */
+.bar-chart-container { display: flex; align-items: flex-end; gap: 15px; height: 150px; padding-top: 20px; border-bottom: 2px solid var(--color-divider); }
+.bar { flex: 1; background: var(--primary-teal); border-radius: 5px 5px 0 0; position: relative; cursor: pointer; }
+.bar:hover::after { content: attr(data-value); position: absolute; top: -25px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+
+/* Messages Interface */
+.msg-list { border-radius: 12px; border: 1px solid var(--color-divider); }
+.msg-item { display: flex; gap: 15px; padding: 15px; background: #fff; border-bottom: 1px solid var(--color-divider); cursor: pointer; }
+.msg-item:hover { background: var(--light-bg); }
+.msg-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; }
+
+/* Modals & Toasts */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.modal { background: #fff; border-radius: 20px; width: 500px; max-width: 90%; padding: 30px; }
+.toast { position: fixed; bottom: 30px; right: 30px; background: #333; color: #fff; padding: 12px 25px; border-radius: 10px; font-size: 14px; z-index: 1000; animation: slideIn 0.3s forwards; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-header"><h2>Doctor Dashboard</h2></div>
+    <div class="nav-menu">
+        <div class="nav-item active" id="nav-patients" onclick="showView('patients')"><i class="fa-solid fa-users"></i> Patients</div>
+        <div class="nav-item" id="nav-appointments" onclick="showView('appointments')"><i class="fa-solid fa-calendar-check"></i> Appointments</div>
+        <div class="nav-item" id="nav-profile" onclick="showView('profile')"><i class="fa-solid fa-user-circle"></i> Doctor Profile</div>
+        <div class="nav-item" id="nav-messages" onclick="showView('messages')"><i class="fa-solid fa-comment-medical"></i> Messages</div>
+    </div>
+    <div class="logout-wrapper">
+        <!-- Settings moved here -->
+        <div class="nav-item" id="nav-settings" onclick="showView('settings')">
+            <i class="fa-solid fa-gears"></i> Settings
+        </div>
+
+        <div class="nav-item nav-logout" onclick="logout()">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </div>
+    </div>
+</div>
+
+<div class="main">
+    
+    <!-- PATIENT DIRECTORY -->
+    <div id="patients-view" class="content-view hidden">
+        <div class="view-header">
+            <div>
+                <h1 style="font-size: 28px; font-weight: 800;">Patient Directory</h1>
+                <p style="color: var(--medium-text); font-size: 14px;">Select a patient to view detailed clinical data</p>
+            </div>
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="patientSearch" placeholder="Search by name or ID..." onkeyup="renderPatientGrid()">
+            </div>
+        </div>
+        <div class="patients-grid" id="patients-grid"></div>
+    </div>
+
+    <!-- REPORT VIEW -->
+    <div id="report-view" class="content-view hidden">
+        <button class="btn-back" onclick="showView('patients')"><i class="fa-solid fa-arrow-left"></i> Back to Directory</button>
+        <div class="report-tabs">
+            <div class="tab-btn active" id="tab-report" onclick="switchReportTab('data')">Critical Risk Report</div>
+           
+        </div>
+        <div id="tab-content-data">
+            <div class="card">
+                <div class="view-header">
+                    <h2 id="p-name-head" style="font-weight: 800;">Name</h2>
+                    <span class="badge" id="risk-badge">Status</span>
+                </div>
+                <div class="demographics">
+                    <div class="demo-item"><span>Age</span><b id="p-age">--</b></div>
+                    <div class="demo-item"><span>Gender</span><b id="p-gender">--</b></div>
+                </div>
+                <div class="risk-summary">
+                    <div class="score-circle" id="p-score">0</div>
+                    <div><h3 style="font-size: 14px; color: var(--medium-text);">Acute Triage Score</h3><b id="p-score-txt" style="font-size: 20px;">0</b></div>
+                </div>
+                <p id="p-vitals" style="font-weight: 700; color: var(--primary-teal); margin-bottom: 10px;">Vitals</p>
+                <p><strong style="font-size: 13px;">Symptoms:</strong> <span id="p-sym" style="color: var(--medium-text);">Symptoms</span></p>
+            </div>
+        </div>
+        
+    </div>
+    <!-- APPOINTMENTS VIEW -->
+    <div id="appointments-view" class="content-view hidden">
+        <div class="view-header">
+            <div>
+                <h1 style="font-weight: 800;">Appointments</h1>
+                <p style="color: var(--medium-text); font-size: 14px;">Manage and track patient visits</p>
+            </div>
+            <button class="btn btn-add" onclick="openForm()">
+                <i class="fa-solid fa-plus"></i> New Appointment
+            </button>
+        </div>
+
+        <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="search" class="search-input" placeholder="Search by patient name..." onkeyup="renderAppointments()">
+        </div>
+
+        <div id="appointments-container"></div>
+    </div>
+
+    <!-- FORM MODAL -->
+    <div id="form-modal" class="hidden">
+        <div class="modal-card">
+            <h3 id="modal-title">New Appointment</h3>
+            
+            <div class="form-group">
+                <label>Patient Name</label>
+                <select id="fPatient" class="form-control" placeholder="Full patient name"></select>
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Date</label>
+                    <input type="date" id="fDate" class="form-control">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Time</label>
+                    <input type="time" id="fTime" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <select id="fStatus" class="form-control">
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn" style="background:#f1f3f5" onclick="closeForm()">Cancel</button>
+                <button class="btn btn-add" onclick="saveAppointment()">Save Appointment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUSTOM CONFIRMATION MODAL -->
+    <div id="confirm-modal" class="hidden">
+        <div class="modal-card" style="width: 350px; text-align: center;">
+            <i class="fa-solid fa-triangle-exclamation" style="color: var(--red-alert); font-size: 3rem; margin-bottom: 15px;"></i>
+            <h3>Are you sure?</h3>
+            <p style="color: var(--medium-text); margin-bottom: 20px;">This appointment will be permanently removed.</p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="btn" style="background:#f1f3f5" onclick="hideConfirm()">Cancel</button>
+                <button class="btn btn-delete" id="confirm-delete-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+    <!--Doctor Profile-->
+    <div id="profile-view" class="content-view hidden">
+        <div class="card">
+            <h2 style="margin-bottom: 20px;">Doctor Profile Settings</h2>
+            <form id="doctorForm">
+                <input type="hidden" id="dId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="dName" class="form-control" placeholder="Enter your full name" required>
+                    </div>
+                   
+
+                    <div class="form-group">
+                      <label>Email Address</label>
+                      <input type="email" id="dEmail" class="form-control" placeholder="doctor@gmail.com">
+                    </div>
+                    
+
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select id="dGender" class="form-control">
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Date of Birth</label>
+                      <input type="date" id="dDob" class="form-control" onchange="calculateAge('dDob','dAge')">
+                    </div>
+
+                    <div class="form-group">
+                      <label>Age</label>
+                      <input type="number" id="dAge" class="form-control" placeholder="Enter your age" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <div class="phone-input-group">
+                            <select id="dCode" class="form-control country-select"></select>
+                            <input type="text" id="dPhone" class="form-control" placeholder="Contact Number">
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Address</label>
+                        <textarea id="dAddress" class="form-control" rows="2" placeholder="House No, Street, Area, City"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Specialization</label>
+                        <input type="text" id="dSpec" class="form-control" placeholder="Enter your Specialization">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select id="dDept" class="form-control">
+                            <option>General OPD</option>
+                            <option>Cardiology</option>
+                            <option>Neurology</option>
+                            <option>Emergency</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Availability Status</label>
+                        <select id="dStatus" class="form-control">
+                            <option>Available</option>
+                            <option>On Leave</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Years of Exp</label>
+                        <input type="number" id="dExp" class="form-control" placeholder="Enter years of experience">
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; display: flex; gap: 12px; justify-content: flex-end; padding-top: 20px; border-top: 1px solid var(--color-divider);">
+                    <button type="button" class="btn btn-cancel" onclick="showView('patients')">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-save" id="dSaveBtn" onclick="saveDoctorProfile()">
+                        <i class="fa-solid fa-check"></i> Save Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    
+
+    <!-- MESSAGES VIEW -->
+    <div id="messages-view" class=" content-view hidden">
+        <div class="view-header">
+            <div><h1 style="font-weight: 800;">Secure Messages</h1></div>
+            <button class="btn-save" onclick="openMsgModal()"><i class="fa-solid fa-pen"></i> New Message</button>
+        </div>
+        <div 
+            class="msg-list" id="msg-container">
+        </div>
+    </div>
+
+
+   <!-- MESSAGE MODAL -->
+<div id="msg-modal" class="modal-overlay hidden">
+    <div class="modal">
+
+        <h3 style="margin-bottom: 15px;">New Message</h3>
+
+        <div class="form-group">
+    <label for="msg-to">Recipient</label>
+    <select id="msg-to" class="form-control">
+        <option value="">Loading recipients...</option>
+    </select>
+</div>
+
+        <div class="form-group" style="margin-top: 15px;">
+            <label for="msg-body">Body</label>
+            <textarea
+                id="msg-body"
+                class="form-control"
+                rows="5"
+                placeholder="Write your message here..."
+            ></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button
+                class="btn-back"
+                style="margin: 0;"
+                onclick="closeMsgModal()">
+                Cancel
+            </button>
+
+            <button
+                class="btn-save"
+                onclick="sendMsg()">
+                Send
+            </button>
+        </div>
+
+    </div>
+</div>
+    <!-- SETTINGS VIEW -->
+    <div id="settings-view" class="content-view hidden">
+        <div class="card">
+
+            <header class="settings-header">
+                <h1>Account Settings</h1>
+                <p>Manage your profile information and security settings</p>
+            </header>
+
+            <!-- Profile Section -->
+            <section class="card">
+                <div class="card-header">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <h3>Profile Credentials</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Current Username</label>
+                            <input type="text" id="currentUsername"  class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>New Username</label>
+                            <input type="text" id="newUsername" class="form-control" placeholder="Enter new username">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="updateUsername()">Update Username</button>
+
+                    <div style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 40px;">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="currentEmail" class="form-control" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>New Email Address</label>
+                                <input type="email" id="newEmail" class="form-control" placeholder="Enter new email">
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="updateEmail()">Update Email Address</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security Section -->
+            <section class="card">
+                <div class="card-header">
+                    <i class="fa-solid fa-shield-check"></i>
+                    <h3>Security & Password</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword">
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" class="form-control" id="newPassword" placeholder="Min. 8 characters">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" placeholder="Repeat password">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+                </div>
+            </section>
+
+        <!-- FOOTER ACTIONS -->
+        <div class="footer-actions">
+            <div class="btn-group" style="margin-top: 0;">
+                <button class="btn btn-outline">Cancel</button>
+                <button class="btn btn-primary" onclick="showToast('Settings saved successfully')">Save All Changes</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+
+const API = "/doctor"; // change if needed
+
+const fetchWithAuth = (url, options = {}) => {
+    return fetch(url, {
+        ...options,
+        credentials: "include", // 🔥 required for Flask session
+        headers: {
+            "Content-Type": "application/json",
+            ...(options.headers || {})
+        }
+    });
+};
+
+async function checkDoctorAccess() {
+    const res = await fetch("/auth/debug", {
+        credentials: "include"
+    });
+
+    const session = await res.json();
+
+    if (!session.role || session.role !== "doctor") {
+        window.location.href = "/login";
+    }
+}
+const countries = [
+    { name: "Afghanistan", code: "+93", flag: "🇦🇫" }, { name: "Albania", code: "+355", flag: "🇦🇱" },
+    { name: "Algeria", code: "+213", flag: "🇩🇿" }, { name: "Andorra", code: "+376", flag: "🇦🇩" },
+    { name: "Angola", code: "+244", flag: "🇦🇴" }, { name: "Argentina", code: "+54", flag: "🇦🇷" },
+    { name: "Armenia", code: "+374", flag: "🇦🇲" }, { name: "Australia", code: "+61", flag: "🇦🇺" },
+    { name: "Austria", code: "+43", flag: "🇦🇹" }, { name: "Azerbaijan", code: "+994", flag: "🇦🇿" },
+    { name: "Bahamas", code: "+1", flag: "🇧🇸" }, { name: "Bahrain", code: "+973", flag: "🇧🇭" },
+    { name: "Bangladesh", code: "+880", flag: "🇧🇩" }, { name: "Barbados", code: "+1", flag: "🇧🇧" },
+    { name: "Belarus", code: "+375", flag: "🇧🇾" }, { name: "Belgium", code: "+32", flag: "🇧🇪" },
+    { name: "Belize", code: "+501", flag: "🇧🇿" }, { name: "Benin", code: "+229", flag: "🇧🇯" },
+    { name: "Bhutan", code: "+975", flag: "🇧🇹" }, { name: "Bolivia", code: "+591", flag: "🇧🇴" },
+    { name: "Bosnia", code: "+387", flag: "🇧🇦" }, { name: "Botswana", code: "+267", flag: "🇧🇼" },
+    { name: "Brazil", code: "+55", flag: "🇧🇷" }, { name: "Brunei", code: "+673", flag: "🇧🇳" },
+    { name: "Bulgaria", code: "+359", flag: "🇧🇬" }, { name: "Burkina Faso", code: "+226", flag: "🇧🇫" },
+    { name: "Burundi", code: "+257", flag: "🇧🇮" }, { name: "Cambodia", code: "+855", flag: "🇰🇭" },
+    { name: "Cameroon", code: "+237", flag: "🇨🇲" }, { name: "Canada", code: "+1", flag: "🇨🇦" },
+    { name: "Cape Verde", code: "+238", flag: "🇨🇻" }, { name: "Central African Rep", code: "+236", flag: "🇨🇫" },
+    { name: "Chad", code: "+235", flag: "🇹🇩" }, { name: "Chile", code: "+56", flag: "🇨🇱" },
+    { name: "China", code: "+86", flag: "🇨🇳" }, { name: "Colombia", code: "+57", flag: "🇨🇴" },
+    { name: "Comoros", code: "+269", flag: "🇰🇲" }, { name: "Congo", code: "+242", flag: "🇨🇬" },
+    { name: "Costa Rica", code: "+506", flag: "🇨🇷" }, { name: "Croatia", code: "+385", flag: "🇭🇷" },
+    { name: "Cuba", code: "+53", flag: "🇨🇺" }, { name: "Cyprus", code: "+357", flag: "🇨🇾" },
+    { name: "Czech Republic", code: "+420", flag: "🇨🇿" }, { name: "Denmark", code: "+45", flag: "🇩🇰" },
+    { name: "Djibouti", code: "+253", flag: "🇩🇯" }, { name: "Dominica", code: "+1", flag: "🇩🇲" },
+    { name: "Dominican Republic", code: "+1", flag: "🇩🇴" }, { name: "Ecuador", code: "+593", flag: "🇪🇨" },
+    { name: "Egypt", code: "+20", flag: "🇪🇬" }, { name: "El Salvador", code: "+503", flag: "🇸🇻" },
+    { name: "Equatorial Guinea", code: "+240", flag: "🇬🇶" }, { name: "Eritrea", code: "+291", flag: "🇪🇷" },
+    { name: "Estonia", code: "+372", flag: "🇪🇪" }, { name: "Ethiopia", code: "+251", flag: "🇪🇹" },
+    { name: "Fiji", code: "+679", flag: "🇫🇯" }, { name: "Finland", code: "+358", flag: "🇫🇮" },
+    { name: "France", code: "+33", flag: "🇫🇷" }, { name: "Gabon", code: "+241", flag: "🇬🇦" },
+    { name: "Gambia", code: "+220", flag: "🇬🇲" }, { name: "Georgia", code: "+995", flag: "🇬🇪" },
+    { name: "Germany", code: "+49", flag: "🇩🇪" }, { name: "Ghana", code: "+233", flag: "🇬🇭" },
+    { name: "Greece", code: "+30", flag: "🇬🇷" }, { name: "Grenada", code: "+1", flag: "🇬🇩" },
+    { name: "Guatemala", code: "+502", flag: "🇬🇹" }, { name: "Guinea", code: "+224", flag: "🇬🇳" },
+    { name: "Guinea-Bissau", code: "+245", flag: "🇬🇼" }, { name: "Guyana", code: "+592", flag: "🇬🇾" },
+    { name: "Haiti", code: "+509", flag: "🇭🇹" }, { name: "Honduras", code: "+504", flag: "🇭🇳" },
+    { name: "Hungary", code: "+36", flag: "🇭🇺" }, { name: "Iceland", code: "+354", flag: "🇮🇸" },
+    { name: "India", code: "+91", flag: "🇮🇳" }, { name: "Indonesia", code: "+62", flag: "🇮🇩" },
+    { name: "Iran", code: "+98", flag: "🇮🇷" }, { name: "Iraq", code: "+964", flag: "🇮🇶" },
+    { name: "Ireland", code: "+353", flag: "🇮🇪" }, { name: "Israel", code: "+972", flag: "🇮🇱" },
+    { name: "Italy", code: "+39", flag: "🇮🇹" }, { name: "Jamaica", code: "+1", flag: "🇯🇲" },
+    { name: "Japan", code: "+81", flag: "🇯🇵" }, { name: "Jordan", code: "+962", flag: "🇯🇴" },
+    { name: "Kazakhstan", code: "+7", flag: "🇰🇿" }, { name: "Kenya", code: "+254", flag: "🇰🇪" },
+    { name: "Kiribati", code: "+686", flag: "🇰🇮" }, { name: "Kuwait", code: "+965", flag: "🇰🇼" },
+    { name: "Kyrgyzstan", code: "+996", flag: "🇰🇬" }, { name: "Laos", code: "+856", flag: "🇱🇦" },
+    { name: "Latvia", code: "+371", flag: "🇱🇻" }, { name: "Lebanon", code: "+961", flag: "🇱🇧" },
+    { name: "Lesotho", code: "+266", flag: "🇱🇸" }, { name: "Liberia", code: "+231", flag: "🇱🇷" },
+    { name: "Libya", code: "+218", flag: "🇱🇾" }, { name: "Liechtenstein", code: "+423", flag: "🇱🇮" },
+    { name: "Lithuania", code: "+370", flag: "🇱🇹" }, { name: "Luxembourg", code: "+352", flag: "🇱🇺" },
+    { name: "Macedonia", code: "+389", flag: "🇲🇰" }, { name: "Madagascar", code: "+261", flag: "🇲🇬" },
+    { name: "Malawi", code: "+265", flag: "🇲🇼" }, { name: "Malaysia", code: "+60", flag: "🇲🇾" },
+    { name: "Maldives", code: "+960", flag: "🇲🇻" }, { name: "Mali", code: "+223", flag: "🇲🇱" },
+    { name: "Malta", code: "+356", flag: "🇲🇹" }, { name: "Marshall Islands", code: "+692", flag: "🇲🇭" },
+    { name: "Mauritania", code: "+222", flag: "🇲🇷" }, { name: "Mauritius", code: "+230", flag: "🇲🇺" },
+    { name: "Mexico", code: "+52", flag: "🇲🇽" }, { name: "Micronesia", code: "+691", flag: "🇫🇲" },
+    { name: "Moldova", code: "+373", flag: "🇲🇩" }, { name: "Monaco", code: "+377", flag: "🇲🇨" },
+    { name: "Mongolia", code: "+976", flag: "🇲🇳" }, { name: "Montenegro", code: "+382", flag: "🇲🇪" },
+    { name: "Morocco", code: "+212", flag: "🇲🇦" }, { name: "Mozambique", code: "+258", flag: "🇲🇿" },
+    { name: "Myanmar", code: "+95", flag: "🇲🇲" }, { name: "Namibia", code: "+264", flag: "🇳🇦" },
+    { name: "Nauru", code: "+674", flag: "🇳🇷" }, { name: "Nepal", code: "+977", flag: "🇳🇵" },
+    { name: "Netherlands", code: "+31", flag: "🇳🇱" }, { name: "New Zealand", code: "+64", flag: "🇳🇿" },
+    { name: "Nicaragua", code: "+505", flag: "🇳🇮" }, { name: "Niger", code: "+227", flag: "🇳🇪" },
+    { name: "Nigeria", code: "+234", flag: "🇳🇬" }, { name: "North Korea", code: "+850", flag: "🇰🇵" },
+    { name: "Norway", code: "+47", flag: "🇳🇴" }, { name: "Oman", code: "+968", flag: "🇴🇲" },
+    { name: "Pakistan", code: "+92", flag: "🇵🇰" }, { name: "Palau", code: "+680", flag: "🇵🇼" },
+    { name: "Panama", code: "+507", flag: "🇵🇦" }, { name: "Papua New Guinea", code: "+675", flag: "🇵🇬" },
+    { name: "Paraguay", code: "+595", flag: "🇵🇾" }, { name: "Peru", code: "+51", flag: "🇵🇪" },
+    { name: "Philippines", code: "+63", flag: "🇵🇭" }, { name: "Poland", code: "+48", flag: "🇵🇱" },
+    { name: "Portugal", code: "+351", flag: "🇵🇹" }, { name: "Qatar", code: "+974", flag: "🇶🇦" },
+    { name: "Romania", code: "+40", flag: "🇷🇴" }, { name: "Russia", code: "+7", flag: "🇷🇺" },
+    { name: "Rwanda", code: "+250", flag: "🇷🇼" }, { name: "Samoa", code: "+685", flag: "🇼🇸" },
+    { name: "San Marino", code: "+378", flag: "🇸🇲" }, { name: "Saudi Arabia", code: "+966", flag: "🇸🇦" },
+    { name: "Senegal", code: "+221", flag: "🇸🇳" }, { name: "Serbia", code: "+381", flag: "🇷🇸" },
+    { name: "Seychelles", code: "+248", flag: "🇸🇨" }, { name: "Sierra Leone", code: "+232", flag: "🇸🇱" },
+    { name: "Singapore", code: "+65", flag: "🇸🇬" }, { name: "Slovakia", code: "+421", flag: "🇸🇰" },
+    { name: "Slovenia", code: "+386", flag: "🇸🇮" }, { name: "Solomon Islands", code: "+677", flag: "🇸🇧" },
+    { name: "Somalia", code: "+252", flag: "🇸🇴" }, { name: "South Africa", code: "+27", flag: "🇿🇦" },
+    { name: "South Korea", code: "+82", flag: "🇰🇷" }, { name: "Spain", code: "+34", flag: "🇪🇸" },
+    { name: "Sri Lanka", code: "+94", flag: "🇱🇰" }, { name: "Sudan", code: "+249", flag: "🇸🇩" },
+    { name: "Suriname", code: "+597", flag: "🇸🇷" }, { name: "Swaziland", code: "+268", flag: "🇸🇿" },
+    { name: "Sweden", code: "+46", flag: "🇸🇪" }, { name: "Switzerland", code: "+41", flag: "🇨🇭" },
+    { name: "Syria", code: "+963", flag: "🇸🇾" }, { name: "Taiwan", code: "+886", flag: "🇹🇼" },
+    { name: "Tajikistan", code: "+992", flag: "🇹🇯" }, { name: "Tanzania", code: "+255", flag: "🇹🇿" },
+    { name: "Thailand", code: "+66", flag: "🇹🇭" }, { name: "Togo", code: "+228", flag: "🇹🇬" },
+    { name: "Tonga", code: "+676", flag: "🇹🇴" }, { name: "Trinidad & Tobago", code: "+1", flag: "🇹🇹" },
+    { name: "Tunisia", code: "+216", flag: "🇹🇳" }, { name: "Turkey", code: "+90", flag: "🇹🇷" },
+    { name: "Turkmenistan", code: "+993", flag: "🇹🇲" }, { name: "Tuvalu", code: "+688", flag: "🇹🇻" },
+    { name: "Uganda", code: "+256", flag: "🇺🇬" }, { name: "Ukraine", code: "+380", flag: "🇺🇦" },
+    { name: "UAE", code: "+971", flag: "🇦🇪" }, { name: "UK", code: "+44", flag: "🇬🇧" },
+    { name: "USA", code: "+1", flag: "🇺🇸" }, { name: "Uruguay", code: "+598", flag: "🇺🇾" },
+    { name: "Uzbekistan", code: "+998", flag: "🇺🇿" }, { name: "Vanuatu", code: "+678", flag: "🇻🇺" },
+    { name: "Vatican City", code: "+379", flag: "🇻🇦" }, { name: "Venezuela", code: "+58", flag: "🇻🇪" },
+    { name: "Vietnam", code: "+84", flag: "🇻🇳" }, { name: "Yemen", code: "+967", flag: "🇾🇪" },
+    { name: "Zambia", code: "+260", flag: "🇿🇲" }, { name: "Zimbabwe", code: "+263", flag: "🇿🇼" }
+];
+
+
+
+let msgData = [
+    { name: "Dr. Richardson", time: "10:24 AM", body: "Sarah Lee's lab results are available.", color: "#f59e0b", init: "DR" },
+    { name: "Nurse Miller", time: "09:15 AM", body: "Emma's BP is stabilizing.", color: "#3b82f6", init: "NM" }
+];
+
+function showView(viewId) {
+    // Hide all views
+    document.querySelectorAll('.content-view').forEach(view => {
+        view.classList.add('hidden');
+    });
+
+    // Remove active class from sidebar items
+    document.querySelectorAll('.nav-item').forEach(nav => {
+        nav.classList.remove('active');
+    });
+
+    // Show selected view
+    const selectedView = document.getElementById(viewId + '-view');
+    if (selectedView) {
+        selectedView.classList.remove('hidden');
+    }
+
+    // Highlight active sidebar item
+    const selectedNav = document.getElementById('nav-' + viewId);
+    if (selectedNav) {
+        selectedNav.classList.add('active');
+    }
+
+    // Special functions
+    if (viewId === 'messages' && typeof renderMessages === 'function') {
+        loadMessages();
+    }
+
+    if (viewId === 'analytics' && typeof renderChart === 'function') {
+        renderChart();
+    }
+
+    if (viewId === 'appointments' && typeof renderAppointments === 'function') {
+        renderAppointments();
+    }
+
+    if (viewId === 'settings') {
+    loadSettings();   // ✅ only here
+}
+
+    if (viewId === 'settings' && typeof populateCountryCodes === 'function') {
+        populateCountryCodes();
+    }
+}
+function populateCountryCodes() {
+    const select = document.getElementById('dCode');
+    if(select.options.length > 0) return;
+    countries.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.code;
+        opt.innerText = `${c.flag} ${c.code}`;
+        select.appendChild(opt);
+    });
+}
+
+let patients = [];
+let deleteTargetId = null;
+let appointments = [];
+
+let editIndex = null;
+let patientsList = [];
+let doctorsList = [];
+
+let usersList = [];
+
+async function loadRecipients() {
+    try {
+        const res = await fetchWithAuth("/doctor/users");
+
+        const result = await res.json();
+
+        const select = document.getElementById("msg-to");
+        select.innerHTML = `<option value="">Select Recipient</option>`;
+
+        if (result.success) {
+            result.data.forEach(user => {
+                const opt = document.createElement("option");
+                opt.value = user.id;
+                opt.innerText = `${user.full_name} (${user.role})`;
+                select.appendChild(opt);
+            });
+        }
+
+    } catch (err) {
+        console.error("Load users failed:", err);
+        document.getElementById("msg-to").innerHTML =
+            `<option value="">Failed to load users</option>`;
+    }
+}
+async function loadMessages() {
+    try {
+        const res = await fetchWithAuth("/doctor/messages");
+        const result = await res.json();
+
+        if (result.success) {
+            msgData = result.data;   // ✅ overwrite dummy data
+            renderMessages();
+        }
+    } catch (err) {
+        console.error("Failed to load messages:", err);
+    }
+}
+
+async function loadProfile() {
+    const res = await fetchWithAuth(`${API}/profile`);
+    const result = await res.json();
+
+    if (result.success) {
+        const d = result.data;
+
+        if (document.getElementById("dName"))
+            document.getElementById("dName").value = d.full_name || "";
+
+        if (document.getElementById("dEmail"))
+            document.getElementById("dEmail").value = d.email || "";
+
+        if (document.getElementById("dGender"))
+            document.getElementById("dGender").value = d.gender || "Male";
+
+        if (document.getElementById("dDob"))
+            document.getElementById("dDob").value = d.date_of_birth || "";
+
+        if (document.getElementById("dPhone"))
+            document.getElementById("dPhone").value = d.contact || "";
+
+        if (document.getElementById("dCode"))
+            document.getElementById("dCode").value = d.phone_code || "+92";
+
+        if (document.getElementById("dAddress"))
+            document.getElementById("dAddress").value = d.address || "";
+
+        if (document.getElementById("dSpec"))
+            document.getElementById("dSpec").value = d.specialization || "";
+
+        if (document.getElementById("dDept"))
+            document.getElementById("dDept").value = d.department || "";
+
+        if (document.getElementById("dStatus"))
+            document.getElementById("dStatus").value = d.status || "Available";
+
+        if (document.getElementById("dExp"))
+            document.getElementById("dExp").value = d.experience_years || "";
+
+        if (document.getElementById("dAge"))
+            document.getElementById("dAge").value = d.age || "";
+    
+        // calculate age automatically
+        if (d.date_of_birth) {
+            calculateAge('dDob','dAge');
+        }
+    }
+}
+
+async function loadAppointments() {
+    const res = await fetchWithAuth(`${API}/appointments`);
+    const data = await res.json();
+
+    if (data.success) {
+        appointments = data.data;
+        renderAppointments();
+    }
+}
+function populatePatientDropdown() {
+    const select = document.getElementById("fPatient");
+    select.innerHTML = "";
+
+    patients.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id;              // ✅ FIXED
+        opt.innerText = p.name;
+        select.appendChild(opt);
+    });
+}
+
+function renderAppointments() {
+    const searchInput = document.getElementById('search');
+    const search = searchInput ? searchInput.value.toLowerCase() : '';
+
+    const container = document.getElementById('appointments-container');
+    container.innerHTML = '';
+
+    const filtered = appointments.filter(a =>
+        (a.patient || '').toLowerCase().includes(search)
+    );
+
+    if (filtered.length === 0) {
+        container.innerHTML =
+            '<div class="card" style="text-align:center; color:var(--medium-text)">No appointments found.</div>';
+        return;
+    }
+
+    filtered.forEach((a) => {
+        const id = a.id || 0;
+        const statusClass = (a.status || 'unknown')
+            .toLowerCase()
+            .replace(/\s+/g, '-');
+
+        const div = document.createElement('div');
+        div.className = 'appointment-card';
+
+        div.innerHTML = `
+            <div class="patient-info">
+                <b>${a.patient || 'Unknown'}</b>
+                <p>
+                    <span><i class="fa-regular fa-calendar-days"></i> ${a.date || ''}</span>
+                    <span><i class="fa-regular fa-clock"></i> ${a.time || ''}</span>
+                </p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span class="status-badge status-${statusClass}">${a.status || 'Unknown'}</span>
+                <div>
+                    <button class="btn btn-edit" onclick="editAppointment(${id})">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button class="btn btn-delete" onclick="showConfirm(${id})">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+async function loadPatients() {
+    const res = await fetchWithAuth(`${API}/patients`);
+    const data = await res.json();
+
+    if (data.success) {
+        patients = data.data;
+        renderPatientGrid();
+        populatePatientDropdown();
+    }
+}
+function showToast(msg) {
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.innerText = msg;
+        document.body.appendChild(t);
+        setTimeout(() => {
+            t.style.opacity = '0';
+            setTimeout(() => t.remove(), 300);
+        }, 3000);
+    }
+function openForm(isEdit = false) {
+    document.getElementById('modal-title').innerText = isEdit ? 'Edit Appointment' : 'New Appointment';
+    document.getElementById('form-modal').classList.remove('hidden');
+}
+
+function closeForm() {
+    document.getElementById('form-modal').classList.add('hidden');
+    clearForm();
+}
+
+function clearForm() {
+    document.getElementById('fPatient').value = '';
+    document.getElementById('fDate').value = '';
+    document.getElementById('fTime').value = '';
+    document.getElementById('fStatus').value = 'Confirmed';
+    editIndex = null;
+}
+async function saveAppointment() {
+    const patient_id = document.getElementById('fPatient').value;
+    const date = document.getElementById('fDate').value;
+    const time = document.getElementById('fTime').value;
+    const status = document.getElementById('fStatus').value;
+
+    if (!patient_id || !date || !time) {
+        showToast("All fields required");
+        return;
+    }
+
+    if (editIndex) {
+        // UPDATE
+        await fetchWithAuth(`${API}/appointments/${editIndex}`, {
+            method: "PUT",
+            body: JSON.stringify({ status })
+        });
+
+        showToast("Appointment updated");
+    } else {
+        // CREATE
+        const res = await fetchWithAuth(`${API}/appointments`, {
+            method: "POST",
+            body: JSON.stringify({ patient_id, date, time })
+        });
+
+        const result = await res.json();
+
+        if (!result.success) {
+            showToast(result.error);
+            return;
+        }
+
+        showToast("Appointment created");
+    }
+
+    loadAppointments();
+    closeForm();
+}
+function editAppointment(id) {
+    const a = appointments.find(x => x.id === id);
+
+    document.getElementById('fPatient').value = a.patient_id;
+    document.getElementById('fDate').value = a.date;
+    document.getElementById('fTime').value = a.time;
+    document.getElementById('fStatus').value = a.status;
+
+    editIndex = id;
+    openForm(true);
+}
+async function updateAppointment(id) {
+    const status = document.getElementById('fStatus').value;
+
+    await fetchWithAuth(`${API}/appointments/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ status })
+    });
+
+    showToast("Updated");
+    loadAppointments();
+}
+// Fixed Delete Functionality using Custom Modal
+function showConfirm(i) {
+    deleteTargetIndex = i;
+    document.getElementById('confirm-modal').classList.remove('hidden');
+    document.getElementById('confirm-delete-btn').onclick = function() {
+        deleteAppointment();
+    };
+}
+
+function hideConfirm() {
+    document.getElementById('confirm-modal').classList.add('hidden');
+    deleteTargetIndex = null;
+}
+
+async function deleteAppointment() {
+    if(deleteTargetIndex !== null) {
+        await fetchWithAuth(`${API}/appointments/${deleteTargetIndex}`, {
+    method: 'DELETE'
+});
+
+        loadAppointments();
+        hideConfirm();
+    }
+}
+// Initial Render
+loadAppointments();
+
+function togglePassword(id, el) {
+    const input = document.getElementById(id);
+    if(input.type === 'password') {
+        input.type = 'text';
+        el.className = 'fa fa-eye-slash';
+    } else {
+        input.type = 'password';
+        el.className = 'fa fa-eye';
+    }
+}
+
+function calculateAge(dobId, ageId) {
+    const dob = document.getElementById(dobId).value;
+    if(!dob) return;
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) { age--; }
+    document.getElementById(ageId).value = age;
+}
+
+function renderPatientGrid() {
+    const query = document.getElementById('patientSearch').value.toLowerCase();
+    const grid = document.getElementById('patients-grid');
+    grid.innerHTML = '';
+    patients.filter(p => p.name.toLowerCase().includes(query)).forEach((p, idx) => {
+        const div = document.createElement('div');
+        div.className = 'patient-card';
+        div.onclick = () => viewPatient(p);
+        div.innerHTML = `<div><h3>${p.name}</h3></div><b>${p.score}</b>`;
+        grid.appendChild(div);
+    });
+}
+
+async function viewPatient(p) {
+    const res = await fetchWithAuth(`${API}/patients/${p.id}`);
+    const result = await res.json();
+
+    if (!result.success) {
+        showToast("Failed to load patient");
+        return;
+    }
+
+    const data = result.data;
+
+    // ✅ FIX: calculate percentage
+    const percent = data.risk_percentage
+    ? Number(data.risk_percentage).toFixed(2)
+    : 0;
+
+    // ✅ FIX: get color
+    const color = getRiskColor(data.risk_level);
+
+    // ✅ HANDLE NO PREDICTION
+    if (!data.prediction) {
+        document.getElementById("risk-badge").innerText = "No Prediction Yet";
+        document.getElementById("risk-badge").style.backgroundColor = "#7f8c8d";
+    } else {
+        document.getElementById("risk-badge").style.backgroundColor = color;
+        document.getElementById("risk-badge").innerText =
+            `${data.risk_level} (${percent}%)`;
+    }
+
+    // ✅ NORMAL DATA
+    document.getElementById('p-name-head').innerText = data.name;
+    document.getElementById('p-age').innerText = data.age;
+    document.getElementById('p-gender').innerText = data.gender;
+
+    document.getElementById('p-score').innerText =
+    data.risk_percentage ? `${data.risk_percentage}%` : "0%";
+    document.getElementById('p-score-txt').innerText = data.risk_level ?? "Unknown";
+
+    document.getElementById('p-vitals').innerText =
+        `Temp: ${data.temperature || '-'} | HR: ${data.heart_rate || '-'} | RR: ${data.respiratory_rate || '-'} `;
+
+    document.getElementById('p-sym').innerText =
+        data.risk_level || "No data";
+
+    showView('report');
+}
+function switchReportTab(type) {
+    document.getElementById('tab-content-data').className = type === 'data' ? '' : 'hidden';
+    document.getElementById('tab-content-logs').className = type === 'logs' ? '' : 'hidden';
+    document.getElementById('tab-report').className = `tab-btn ${type === 'data' ? 'active' : ''}`;
+    document.getElementById('tab-logs').className = `tab-btn ${type === 'logs' ? 'active' : ''}`;
+}
+
+function getRiskColor(level) {
+    if (!level) return "gray";
+
+    level = level.toLowerCase();
+
+    if (level.includes("high")) return "#e74c3c";     // red
+    if (level.includes("medium")) return "#f1c40f";   // yellow
+    if (level.includes("low")) return "#2ecc71";      // green
+
+    return "gray";
+}
+
+function renderMessages() {
+    const container = document.getElementById('msg-container');
+    container.innerHTML = '';
+
+    const currentUserId = window.currentUserId; // 👈 set this once
+
+    msgData.forEach(m => {
+        const isMe = m.sender_id === currentUserId;
+
+        const name = isMe ? "You" : m.sender_name;
+
+        const div = document.createElement('div');
+        div.className = 'msg-item';
+
+        div.innerHTML = `
+            <div class="msg-avatar">${name.slice(0,2)}</div>
+            <div style="flex:1">
+                <b>${name}</b>
+                <p>${m.body}</p>
+            </div>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+function openMsgModal() { document.getElementById('msg-modal').classList.remove('hidden'); }
+function closeMsgModal() { document.getElementById('msg-modal').classList.add('hidden'); }
+
+async function sendMsg() {
+    const body = document.getElementById('msg-body').value;
+    const receiver_id = document.getElementById('msg-to').value;
+
+    if (!receiver_id || !body) {
+        showToast("Select recipient and write message");
+        return;
+    }
+
+    const res = await fetchWithAuth("/doctor/messages", {
+        method: "POST",
+        body: JSON.stringify({ receiver_id, body })
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+        showToast("Message sent");
+        closeMsgModal();
+        document.getElementById('msg-body').value = "";
+
+        loadMessages(); // ✅ refresh messages
+    } else {
+        showToast("Failed to send message");
+    }
+}
+
+function renderChart() {
+    const container = document.getElementById('analytics-chart');
+    container.innerHTML = '';
+    [40, 65, 50, 90, 75, 30, 20].forEach((h, i) => {
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.height = h + '%';
+        bar.setAttribute('data-value', Math.floor(h/2));
+        container.appendChild(bar);
+    });
+}
+async function saveDoctorProfile() {
+    const data = {
+        full_name: document.getElementById('dName').value,
+        email: document.getElementById('dEmail').value,
+        gender: document.getElementById('dGender').value,
+        dob: document.getElementById('dDob').value,
+        phone: document.getElementById('dPhone').value,
+        code: document.getElementById('dCode').value,
+        address: document.getElementById('dAddress').value,
+        specialization: document.getElementById('dSpec').value,
+        department: document.getElementById('dDept').value,
+        status: document.getElementById('dStatus').value,
+        experience: document.getElementById('dExp').value
+    };
+
+    if (!data.full_name) {
+        showToast("Name is required");
+        return;
+    }
+
+    const res = await fetchWithAuth(`${API}/profile`, {
+        method: "PUT",
+        body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+        showToast("Profile updated successfully");
+        showView('patients');
+    } else {
+        showToast(result.error);
+    }
+}
+function saveDoctor() {
+    const name = document.getElementById('dName').value;
+    const pass = document.getElementById('dPassword').value;
+    const conf = document.getElementById('dConfirmPassword').value;
+
+    if(!name) { showToast("Name is required"); return; }
+    if(pass !== conf) { showToast("Passwords do not match!"); return; }
+
+    showToast(`Profile updated for ${name}`);
+    showView('patients');
+}
+
+function showToast(msg) {
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.innerText = msg;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 500); }, 2000);
+}
+
+function logout() {
+    if (confirm("Logout from ClinicianHub?")) {
+        fetch("/auth/logout", {
+            method: "GET",
+            credentials: "include"
+        }).then(() => {
+            window.location.href = "/login"; // or your login page route
+        });
+    }
+}
+
+async function updateUsername() {
+    const username = document.getElementById("newUsername").value;
+
+    if (!username) {
+        showToast("Enter username");
+        return;
+    }
+
+    const res = await fetchWithAuth("/doctor/update-username", {
+        method: "PUT",
+        body: JSON.stringify({ username })
+    });
+
+    const result = await res.json();
+
+    if(result.success) {
+        showToast("Username updated");
+        loadProfile(); // 🔥 refresh UI
+    } else {
+        showToast(result.error);
+    }
+}
+
+async function updateEmail() {
+    const email = document.querySelector('input[placeholder="Enter new email"]').value;
+
+    const res = await fetchWithAuth("/doctor/update-email", {
+        method: "PUT",
+        body: JSON.stringify({ email })
+    });
+
+    const result = await res.json();
+
+    if(result.success) showToast("Email updated");
+    else showToast(result.error);
+}
+async function changePassword() {
+    const current = document.getElementById("currentPassword")?.value;
+    const newPass = document.getElementById("newPassword")?.value;
+    const confirm = document.getElementById("confirmPassword")?.value;
+
+    if (!current || !newPass || !confirm) {
+        showToast("All fields required");
+        return;
+    }
+
+    if (newPass !== confirm) {
+        showToast("Passwords do not match");
+        return;
+    }
+
+    const res = await fetchWithAuth("/doctor/change-password", {
+        method: "PUT",
+        body: JSON.stringify({
+            current_password: current,
+            new_password: newPass
+        })
+    });
+
+    const result = await res.json();
+
+    if(result.success) {
+        showToast("Password updated");
+
+        // clear fields
+        document.getElementById("currentPassword").value = "";
+        document.getElementById("newPassword").value = "";
+        document.getElementById("confirmPassword").value = "";
+    } else {
+        showToast(result.error);
+    }
+}
+async function loadSettings() {
+    try {
+        const res = await fetchWithAuth("/doctor/profile");
+        const result = await res.json();
+
+        if (!result.success) return;
+
+        const d = result.data;
+
+        const usernameEl = document.getElementById("currentUsername");
+        const emailEl = document.getElementById("currentEmail");
+
+        // Only update if elements exist (prevents crash)
+        if (usernameEl) usernameEl.value = d.username || "";
+        if (emailEl) emailEl.value = d.email || "";
+
+    } catch (err) {
+        console.error("Settings load failed:", err);
+    }
+}
+
+window.currentUserId = null;
+
+async function setCurrentUser() {
+    const res = await fetch("/auth/debug", { credentials: "include" });
+    const data = await res.json();
+    window.currentUserId = data.user_id;
+}
+
+window.onload = () => {
+    setCurrentUser();  
+    loadRecipients();
+    checkDoctorAccess();   
+    showView('patients');
+    loadProfile();
+    loadPatients();
+    loadAppointments();
+    populateCountryCodes();
+};
+</script>
+</body>
+</html>

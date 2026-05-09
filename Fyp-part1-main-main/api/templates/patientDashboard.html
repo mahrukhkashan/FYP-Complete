@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Portal | Dynamic View</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* ======================================= */
+        /* --- GLOBAL STYLES & VARIABLES --- */
+        /* ======================================= */
+        :root {
+            --primary-teal: #23ae96; 
+            --light-teal: #e6f9f7;
+            --dark-text: #333333;
+            --medium-text: #666666;
+            --light-bg: #f5fafd;
+            --white: #ffffff;
+            --red-alert: #ff6347;
+            --moderate-risk: #ffc107;
+            --high-risk: #ff6347;
+            --low-risk: #9cd4a6;
+            --color-divider: #EAEAEA;
+            --color-gradient-start: #00D2D2;
+            --color-gradient-end: #00796B; /* Used for active nav and button */
+            
+            /* New Variable for Simulation background */
+            --simulation-bg: #e6fffa; 
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+        }
+
+        /* --- SIDEBAR STYLING --- */
+        .sidebar {
+            width: 250px;
+            background-color: var(--white);
+            border-right: 1px solid #eee;
+            padding: 30px 0 20px 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            align-items: flex-start;
+        }
+
+        .portal-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-teal);
+            padding: 0 30px 30px 30px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 15px 30px;
+            text-decoration: none;
+            color: var(--medium-text);
+            font-size: 1rem;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-link i {
+            width: 20px;
+            margin-right: 15px;
+            font-size: 1.1rem;
+        }
+
+        .nav-link:hover:not(.active) {
+            background-color: #f0f0f0;
+        }
+
+        .nav-link.active {
+            /* Active background color */
+            background-color: var(--color-gradient-end); 
+            color: var(--white);
+            font-weight: bold;
+            padding-left: 35px; 
+        }
+        .nav-link.active i {
+            color: var(--white);
+        }
+
+        .patient-user {
+            margin-top: auto;
+            border-top: 1px solid #eee;
+            width: 100%;
+            padding: 20px 30px 0 30px;
+            font-size: 0.9rem;
+            color: var(--medium-text);
+        }
+
+        /* --- MAIN CONTENT STYLING --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-view {
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-bar h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .vitals-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.9rem;
+        }
+
+        .risk-alert {
+            background-color: var(--red-alert);
+            color: var(--white);
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .risk-alert i {
+            font-size: 0.8rem;
+        }
+
+        .vitals-time {
+            color: var(--medium-text);
+        }
+        
+        /* ======================================= */
+        /* --- WIDTH INCREASE APPLIED HERE --- */
+        /* ======================================= */
+        
+        /* Increased max-width for most views (Dashboard, Vitals, History, Lab, Simulation, Settings) */
+        .dashboard-view, .vitals-view, .history-view, .lab-view, .simulation-view, .settings-view { 
+            max-width: 1400px; /* Increased from 1200px */
+            margin: 0 auto;
+        }
+        
+        /* Increased max-width for the Report View, as it was intentionally narrower */
+        .report-view {
+            max-width: 1100px; /* Increased from 900px */
+            margin: 0 auto;
+        }
+        
+        /* ======================================= */
+        /* --- DASHBOARD VIEW STYLES (Image 1) --- */
+        /* ======================================= */
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        .card {
+            background-color: var(--white);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        .card-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 20px;
+        }
+        .card-header i {
+            color: var(--primary-teal);
+            margin-right: 8px;
+        }
+        .acute-prediction {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .gauge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .gauge-svg {
+            overflow: visible;
+        }
+        .risk-score-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-top: -10px;
+        }
+        .risk-label {
+            background-color: var(--moderate-risk);
+            color: var(--white);
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        .prediction-note {
+            font-size: 0.8rem;
+            color: var(--medium-text);
+            margin-top: 15px;
+        }
+        .factor-list { list-style: none; padding: 0; }
+        .factor-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
+        }
+        .factor-item:last-child { border-bottom: none; }
+        .factor-risk { font-weight: bold; }
+        .risk-high { color: var(--red-alert); }
+        .risk-moderate { color: var(--moderate-risk); }
+        .risk-low { color: var(--primary-teal); }
+        .guidance-list { list-style: none; padding: 0; }
+        .guidance-item {
+            padding: 10px 0;
+            display: flex;
+            align-items: flex-start;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        .guidance-item i {
+            color: var(--primary-teal);
+            margin-right: 10px;
+            margin-top: 3px;
+            font-size: 0.9rem;
+        }
+
+
+        /* ======================================= */
+        /* --- INPUT VITALS VIEW STYLES --- */
+        /* ======================================= */
+        .vitals-view {
+            display: none; 
+        }
+        .vitals-view .header-bar {
+            margin-bottom: 10px; 
+            padding-bottom: 20px;
+        }
+
+        .input-card {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            width: 100%; 
+        }
+        
+        .vitals-card-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .vitals-form-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 30px 20px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            min-height: 70px; 
+        }
+        
+        .input-group label {
+            font-size: 0.9em; 
+            font-weight: 500;
+            color: var(--medium-text);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-group label i {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+        
+        input[type="number"],
+        input[type="text"],
+        select {
+            border: none;
+            border-bottom: 1px solid var(--color-divider);
+            padding: 10px 0 5px 0; 
+            font-size: 1em;
+            color: var(--dark-text);
+            background: transparent;
+            width: 100%;
+            transition: border-bottom-color 0.3s;
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-bottom-color: var(--primary-teal);
+        }
+
+        .symptoms-area {
+            margin-bottom: 30px;
+            grid-column: 1 / -1; 
+        }
+
+        .symptoms-area label {
+            font-size: 0.9em; 
+            font-weight: 500;
+            color: var(--medium-text);
+            margin-bottom: 10px;
+            display: block; 
+        }
+
+        .symptoms-area textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid var(--color-divider);
+            border-radius: 5px;
+            font-size: 1em;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        .symptoms-area textarea:focus {
+            outline: none;
+            border-color: var(--primary-teal);
+        }
+
+        .submit-container {
+            padding-top: 30px;
+            text-align: center;
+        }
+
+        .save-button {
+            width: 100%; 
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--white);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: linear-gradient(to right, var(--color-gradient-start), var(--color-gradient-end));
+            transition: opacity 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+        }
+
+        .save-button:hover {
+            opacity: 0.9;
+        }
+
+        /* ======================================= */
+        /* --- PATIENT HISTORY VIEW STYLES --- */
+        /* ======================================= */
+        .history-view {
+            display: none;
+        }
+        
+        .history-card {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            width: 100%; 
+        }
+
+        .history-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--dark-text);
+        }
+        .history-title i {
+            color: var(--primary-teal);
+            margin-right: 10px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+        .history-table th, .history-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--color-divider);
+        }
+        .history-table th {
+            font-weight: 600;
+            color: var(--medium-text);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        .history-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .history-score {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: var(--white);
+            min-width: 40px;
+            text-align: center;
+        }
+
+        /* Risk color coding for history table */
+        .risk-8, .risk-10 { background-color: var(--low-risk); color: var(--dark-text); }
+        .risk-12 { background-color: var(--moderate-risk); color: var(--white);}
+        .risk-16 { background-color: var(--high-risk); color: var(--white);}
+        
+        /* ======================================= */
+        /* --- HEALTH REPORT VIEW STYLES --- */
+        /* ======================================= */
+        .report-view {
+            display: none;
+        }
+        .report-card {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            width: 100%; 
+        }
+        .report-header {
+            text-align: center;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--color-divider);
+        }
+        .report-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary-teal);
+            margin-bottom: 5px;
+        }
+        .report-header p {
+            font-size: 0.85rem;
+            color: var(--medium-text);
+        }
+        .patient-overview {
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+        }
+        .patient-overview span {
+            margin-right: 20px;
+            color: var(--medium-text);
+        }
+        .patient-overview strong {
+            color: var(--dark-text);
+        }
+
+        .current-risk-status {
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+        .risk-gauge-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .risk-text-area {
+            flex-grow: 1;
+        }
+        .risk-text-area h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .risk-text-area p {
+            font-size: 0.9rem;
+            color: var(--medium-text);
+            line-height: 1.5;
+        }
+        .risk-text-area strong {
+            color: var(--moderate-risk);
+        }
+        .risk-text-area .risk-high-alert {
+            color: var(--red-alert);
+        }
+
+        .key-vitals-snapshot {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 0;
+            border-top: 1px solid var(--color-divider);
+            margin-top: 20px;
+        }
+        .vital-item {
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        .vital-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: var(--primary-teal);
+        }
+        .vital-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* ======================================= */
+        /* --- LAB RESULTS VIEW STYLES --- */
+        /* ======================================= */
+
+        .lab-view {
+            display: none;
+        }
+
+        .lab-view .header-bar {
+            margin-bottom: 10px;
+            padding-bottom: 20px;
+        }
+
+        .lab-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            align-items: flex-start; /* Align cards to the top */
+        }
+
+        .recent-results-card, .upload-card {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .lab-card-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--dark-text);
+            border-bottom: 1px solid var(--color-divider);
+            padding-bottom: 15px;
+        }
+
+        .lab-card-title i {
+            color: var(--primary-teal);
+            margin-right: 10px;
+        }
+
+        /* --- Recent Results List (Currently not in image, but included for completeness) --- */
+        .results-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f9f9f9;
+            transition: background-color 0.2s;
+        }
+        .result-item:hover {
+            background-color: #fcfcfc;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .result-date {
+            font-size: 0.85rem;
+            color: var(--medium-text);
+            margin-top: 2px;
+        }
+
+        .result-actions a {
+            color: var(--primary-teal);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-left: 15px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid var(--primary-teal);
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .result-actions a:hover {
+            background-color: var(--primary-teal);
+            color: var(--white);
+        }
+
+        /* --- Upload Card --- */
+        .upload-card {
+            /* display: flex; Removed to ensure it takes up the full width in the single-column grid view, and to center content better */
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 40px 25px;
+        }
+        /* Style for the upload box from labreults.png */
+        .upload-box {
+            border: 2px dashed var(--color-divider); /* Changed to a lighter dash line based on the image */
+            border-radius: 10px;
+            background-color: var(--white); /* White background for the dashed box */
+            padding: 60px 20px; /* Increased padding to match size in image */
+            margin-bottom: 20px;
+            width: 80%; /* Adjusted width for a cleaner look in the upload card */
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        .upload-box:hover {
+            border-color: var(--primary-teal);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary-teal);
+            margin-bottom: 10px;
+        }
+
+        .file-upload-text {
+            color: var(--dark-text);
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+        .file-upload-text strong {
+            display: block;
+            font-weight: 600;
+        }
+        .file-upload-text span {
+            font-size: 0.85rem;
+            color: var(--medium-text);
+            margin-top: 5px;
+            display: block;
+        }
+
+        #lab_file_input {
+            display: none;
+        }
+
+        .browse-button {
+            background: var(--primary-teal); /* Used a solid color, as linear gradient doesn't exactly match the image button */
+            color: var(--white);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .browse-button:hover {
+            background-color: var(--color-gradient-end);
+        }
+        /* Styling for the second button and note */
+        .manual-entry-note {
+            font-size: 0.9rem;
+            color: var(--medium-text);
+            margin-top: 25px;
+            margin-bottom: 15px;
+            padding: 0 10%; /* Add horizontal padding for a slightly smaller text block */
+        }
+
+        .manual-entry-button {
+            width: 80%; /* Make it match the width of the upload box */
+            max-width: 400px;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--white);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: var(--primary-teal); /* Using primary teal which is close to the blue color */
+            background: linear-gradient(to right, #00D2D2, #00796B); /* Matched gradient from the image */
+            transition: opacity 0.3s;
+        }
+        .manual-entry-button:hover {
+            opacity: 0.9;
+        }
+
+        /* ======================================= */
+        /* --- SIMULATION VIEW STYLES --- */
+        /* ======================================= */
+        .simulation-view {
+            display: none;
+        }
+        .simulation-card {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            width: 100%; 
+        }
+
+        .simulation-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 10px;
+        }
+        .simulation-header p {
+            font-size: 0.95rem;
+            color: var(--medium-text);
+            margin-bottom: 30px;
+        }
+
+        .scenario-select {
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .scenario-select input {
+            padding: 12px 10px;
+            border: 1px solid var(--color-divider);
+            border-radius: 5px;
+        }
+        
+        /* New style for the risk display in Simulation to match the light teal background */
+        .simulated-risk-display {
+            background-color: var(--simulation-bg); /* Use the new light teal variable */
+            border-radius: 10px;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .sim-risk-score {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--dark-text);
+            margin-top: -10px; /* Adjust vertical position with gauge */
+        }
+        
+        .sim-risk-label {
+            margin-top: 10px;
+            background-color: var(--moderate-risk);
+            color: var(--white);
+            padding: 3px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .sim-scenario-label {
+            font-size: 0.85rem;
+            color: var(--medium-text);
+            margin-top: 20px;
+        }
+        
+        .sim-scenario-label strong {
+            color: var(--primary-teal);
+        }
+
+        /* ======================================= */
+        /* --- SETTINGS VIEW STYLES --- */
+        /* ======================================= */
+        .settings-view {
+            display: none; 
+        }
+
+        .settings-card {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            width: 100%; 
+            max-width: 600px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        .settings-card-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-card-title i {
+            color: var(--primary-teal);
+            margin-right: 10px;
+        }
+
+        .setting-section {
+            margin-bottom: 35px;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+            text-align: left;
+        }
+
+        .setting-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .setting-label {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .settings-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--color-divider);
+            border-radius: 5px;
+            font-size: 1em;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            transition: border-color 0.3s;
+        }
+        .settings-input:focus {
+            outline: none;
+            border-color: var(--primary-teal);
+        }
+
+        .current-setting-value {
+            font-size: 0.9em;
+            color: var(--medium-text);
+            margin-top: 5px;
+            display: block;
+        }
+
+        .download-button, .update-button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--white);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: linear-gradient(to right, var(--color-gradient-start), var(--color-gradient-end));
+            transition: opacity 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 15px;
+        }
+
+        .download-button i, .update-button i {
+            margin-right: 10px;
+        }
+
+        .download-button:hover, .update-button:hover {
+            opacity: 0.9;
+        }
+        
+        .notification-checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            font-size: 1em;
+            color: var(--dark-text);
+        }
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-teal);
+        }
+
+        /* ======================================= */
+        /* --- FALLBACK VIEW STYLES --- */
+        /* ======================================= */
+        .fallback-view {
+            text-align: center;
+            padding: 50px;
+            background-color: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+        }
+        .fallback-view h2 {
+            color: var(--medium-text);
+            font-size: 1.5rem;
+        }
+
+        /* ======================================= */
+        /* --- RESPONSIVE STYLES --- */
+        /* ======================================= */
+        @media (max-width: 1200px) { 
+            .vitals-form-grid {
+                grid-template-columns: repeat(3, 1fr); 
+            }
+        }
+        @media (max-width: 992px) {
+            .lab-grid {
+                grid-template-columns: 1fr; /* Stack the lab view cards */
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .report-view {
+                max-width: 100%;
+            }
+            .report-card {
+                padding: 20px;
+            }
+            .current-risk-status {
+                flex-direction: column;
+                text-align: center;
+            }
+            .risk-gauge-area {
+                margin-bottom: 20px;
+            }
+            .patient-overview {
+                flex-direction: column;
+            }
+            .patient-overview span {
+                margin-bottom: 5px;
+            }
+        }
+        @media (max-width: 800px) {
+            .vitals-form-grid {
+                grid-template-columns: repeat(2, 1fr); 
+            }
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                padding: 20px;
+            }
+            .vitals-view, .history-view, .lab-view, .simulation-view, .settings-view {
+                max-width: 100%;
+            }
+            /* Make the history table horizontally scrollable on small screens */
+            .history-card {
+                padding: 20px;
+                overflow-x: auto;
+            }
+            .history-table {
+                min-width: 650px; /* Ensure table doesn't collapse too much */
+            }
+            .upload-box, .manual-entry-button {
+                width: 100%; /* Full width on smaller screens */
+            }
+            .settings-card {
+                max-width: 100%;
+            }
+        }
+        @media (max-width: 500px) {
+            .vitals-form-grid {
+                grid-template-columns: 1fr; 
+            }
+            .header-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .vitals-status {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .vitals-status .risk-alert {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="sidebar">
+        <h2 class="portal-title">Patient Portal</h2>
+        
+        <a id="nav-dashboard" href="#dashboard" class="nav-link active" data-view="dashboard">
+            <i class="fas fa-chart-bar"></i> Dashboard
+        </a>
+        <a id="nav-vitals" href="#input-vitals" class="nav-link" data-view="vitals">
+            <i class="fas fa-syringe"></i> Input Vitals
+        </a>
+        <a id="nav-history" href="#patient-history" class="nav-link" data-view="history">
+            <i class="fas fa-heartbeat"></i> Patient History
+        </a>
+        <a id="nav-report" href="#health-report" class="nav-link" data-view="report">
+            <i class="fas fa-file-alt"></i> Health Report
+        </a>
+        <a id="nav-lab" href="#lab-results" class="nav-link" data-view="lab">
+            <i class="fas fa-flask"></i> Lab Results
+        </a>
+        <a id="nav-simulation" href="#simulation" class="nav-link" data-view="simulation">
+            <i class="fas fa-brain"></i> Simulation
+        </a>
+        <a id="nav-assistant" href="#assistant" class="nav-link" data-view="assistant">
+            <i class="fas fa-comments"></i> Assistant
+        </a>
+        <a id="nav-settings" href="#settings" class="nav-link" data-view="settings">
+            <i class="fas fa-cog"></i> Settings
+        </a>
+        
+        <div class="patient-user">
+            Patient User
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <div id="dashboard-content" class="content-view dashboard-view" style="display: block;">
+            
+            <div class="header-bar">
+                <h1>Patient Dashboard</h1>
+                <div class="vitals-status">
+                    <span class="risk-alert" style="background-color: var(--moderate-risk);"><i class="fas fa-exclamation-triangle"></i> Moderate Risk</span>
+                    <span class="vitals-time">Vitals Updated: 9:31:25 PM</span>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                
+                <div class="card acute-prediction">
+                    <h2 class="card-header"><i class="fas fa-bell"></i> Acute Risk Prediction (24h)</h2>
+                    <div class="gauge-container">
+                        <svg class="gauge-svg" width="160" height="80" viewBox="0 0 160 80">
+                            <path d="M 20 80 A 60 60 0 0 1 140 80" fill="none" stroke="#e0e0e0" stroke-width="15" />
+                            <path d="M 20 80 A 60 60 0 0 1 66 38" fill="none" stroke="var(--low-risk)" stroke-width="15" />
+                            <path d="M 66 38 A 60 60 0 0 1 114 38" fill="none" stroke="var(--moderate-risk)" stroke-width="15" />
+                            <path d="M 114 38 A 60 60 0 0 1 140 80" fill="none" stroke="var(--red-alert)" stroke-width="15" />
+                            <path id="needle" d="M 80 80 L 80 20 L 80 80" fill="none" stroke="var(--dark-text)" stroke-width="2" transform="rotate(-90 80 80)" style="transition: transform 1s; transform: rotate(0deg) translate(0, 0);" />
+                        </svg>
+                        <div class="risk-score-display" style="color: var(--moderate-risk);">45</div>
+                        <div class="risk-label" style="background-color: var(--moderate-risk);">Moderate</div>
+                    </div>
+                    <p class="prediction-note">Based on latest vitals and historical data.</p>
+                </div>
+
+                <div class="card key-factors">
+                    <h2 class="card-header"><i class="fas fa-stream"></i> Top Contributing Factors</h2>
+                    <ul class="factor-list">
+                        <li class="factor-item">
+                            <span>Respiratory Rate</span>
+                            <span class="factor-risk risk-high">High (22 breaths/min)</span>
+                        </li>
+                        <li class="factor-item">
+                            <span>Heart Rate Variability</span>
+                            <span class="factor-risk risk-moderate">Moderate (40ms)</span>
+                        </li>
+                        <li class="factor-item">
+                            <span>Blood Oxygen Saturation</span>
+                            <span class="factor-risk risk-low">Low (97%)</span>
+                        </li>
+                        <li class="factor-item">
+                            <span>Temperature Trend</span>
+                            <span class="factor-risk risk-moderate">Moderate (Rising)</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card long-term-trend" style="grid-column: 1 / -1;">
+                    <h2 class="card-header"><i class="fas fa-chart-line"></i> 7-Day Risk Trend</h2>
+                    <p style="text-align: center; color: var(--medium-text); padding: 50px;">[Placeholder: Line Chart showing Risk Score over the last 7 days]</p>
+                </div>
+
+                <div class="card guidance-card">
+                    <h2 class="card-header"><i class="fas fa-lightbulb"></i> Recommended Actions</h2>
+                    <ul class="guidance-list">
+                        <li class="guidance-item"><i class="fas fa-check-circle"></i> Increase respiratory rate monitoring frequency to every 30 minutes.</li>
+                        <li class="guidance-item"><i class="fas fa-check-circle"></i> Hydration check: Ensure patient has consumed adequate fluids (Target: 2.5L).</li>
+                        <li class="guidance-item"><i class="fas fa-check-circle"></i> Notify care provider of persistent moderate risk and rising temperature.</li>
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div id="vitals-content" class="content-view vitals-view">
+    <div class="header-bar">
+        <h1>Input Patient Vitals</h1>
+    </div>
+
+    <div class="input-card">
+        <h2 class="vitals-card-title">Enter Patient Vitals</h2>
+
+        <form id="predictForm">
+            <div class="vitals-form-grid">
+
+                <div class="input-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" name="age" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender" required>
+                        <option value="">Select</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="heart_rate">Heart Rate (BPM)</label>
+                    <input type="number" id="heart_rate" name="heart_rate" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="temperature">Temperature (°C)</label>
+                    <input type="number" step="0.1" id="temperature" name="temperature" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="respiratory_rate">Respiratory Rate</label>
+                    <input type="number" id="respiratory_rate" name="respiratory_rate" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="systolic_bp">Systolic BP</label>
+                    <input type="number" id="systolic_bp" name="systolic_bp" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="diastolic_bp">Diastolic BP</label>
+                    <input type="number" id="diastolic_bp" name="diastolic_bp" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="mental_status">Mental Status (GCS)</label>
+                    <input type="number" id="mental_status" name="mental_status" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="wbc">WBC</label>
+                    <input type="number" step="0.1" id="wbc" name="wbc" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="platelets">Platelets</label>
+                    <input type="number" id="platelets" name="platelets" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="creatinine">Creatinine</label>
+                    <input type="number" step="0.1" id="creatinine" name="creatinine" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="bilirubin">Bilirubin</label>
+                    <input type="number" step="0.1" id="bilirubin" name="bilirubin" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="lactate">Lactate</label>
+                    <input type="number" step="0.1" id="lactate" name="lactate" required>
+                </div>
+
+            </div>
+
+            <div class="submit-container">
+                <button type="submit" class="save-button">
+                    Predict Sepsis
+                </button>
+            </div>
+        </form>
+    </div>
+        <div id="predictionResult" class="prediction-result" style="display:none; margin-top:20px;">
+            <h3>Prediction Result</h3>
+            <p><strong>Prediction:</strong> <span id="predText"></span></p>
+            <p><strong>Risk Level:</strong> <span id="riskText"></span></p>
+            <p><strong>Probability:</strong> <span id="probText"></span></p>
+        </div>
+</div>
+
+        <div id="history-content" class="content-view history-view">
+            <div class="header-bar">
+                <h1>Patient History</h1>
+            </div>
+            <div class="history-card">
+                <h2 class="history-title"><i class="fas fa-clock"></i> Recent Vitals & Risk Scores</h2>
+                <div style="overflow-x: auto;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>Heart Rate (BPM)</th>
+                                <th>Resp. Rate</th>
+                                <th>O₂ Sat (%)</th>
+                                <th>Temp (°C)</th>
+                                <th>Risk Score</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2025-12-13 21:30</td>
+                                <td>72</td>
+                                <td>22</td>
+                                <td>95</td>
+                                <td>38.1</td>
+                                <td><span class="history-score risk-16">16</span></td>
+                                <td>New onset of fever and mild shortness of breath.</td>
+                            </tr>
+                            <tr>
+                                <td>2025-12-13 18:00</td>
+                                <td>75</td>
+                                <td>18</td>
+                                <td>96</td>
+                                <td>37.5</td>
+                                <td><span class="history-score risk-12">12</span></td>
+                                <td>Reported general fatigue.</td>
+                            </tr>
+                            <tr>
+                                <td>2025-12-13 09:00</td>
+                                <td>68</td>
+                                <td>16</td>
+                                <td>98</td>
+                                <td>36.8</td>
+                                <td><span class="history-score risk-8">8</span></td>
+                                <td>Routine morning check. All normal.</td>
+                            </tr>
+                            <tr>
+                                <td>2025-12-12 21:00</td>
+                                <td>70</td>
+                                <td>17</td>
+                                <td>97</td>
+                                <td>37.0</td>
+                                <td><span class="history-score risk-10">10</span></td>
+                                <td>Pre-sleep vitals.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="report-content" class="content-view report-view" style="display: none;">
+            
+            <div class="header-bar">
+                <h1>Comprehensive Health Report</h1>
+                <div class="vitals-status">
+                    <span class="risk-alert"><i class="fas fa-exclamation-triangle"></i> High Risk Alert!</span>
+                    <span class="vitals-time">Generated: 9:31:25 PM</span>
+                </div>
+            </div>
+            
+            <div class="report-card">
+                <div class="report-header">
+                    <h2>Summary Report: December 13, 2025</h2>
+                    <p>Analysis of most recent vitals and chronic health factors.</p>
+                </div>
+
+                <div class="patient-overview">
+                    <span><strong>Patient:</strong> Jane Doe (ID: 4567)</span>
+                    <span><strong>Age:</strong> 68</span>
+                    <span><strong>Chronic Conditions:</strong> COPD, Type 2 Diabetes</span>
+                    <span><strong>Last Update:</strong> 21:30 (Current Vitals)</span>
+                </div>
+
+                <div class="current-risk-status">
+                    <div class="risk-gauge-area">
+                        <svg class="gauge-svg" width="120" height="60" viewBox="0 0 160 80">
+                            <path d="M 20 80 A 60 60 0 0 1 140 80" fill="none" stroke="#e0e0e0" stroke-width="15" />
+                            <path d="M 20 80 A 60 60 0 0 1 66 38" fill="none" stroke="var(--low-risk)" stroke-width="15" />
+                            <path d="M 66 38 A 60 60 0 0 1 114 38" fill="none" stroke="var(--moderate-risk)" stroke-width="15" />
+                            <path d="M 114 38 A 60 60 0 0 1 140 80" fill="none" stroke="var(--red-alert)" stroke-width="15" />
+                            <path id="needle-report" d="M 80 80 L 80 20 L 80 80" fill="none" stroke="var(--dark-text)" stroke-width="2" transform="rotate(-45 80 80)" />
+                        </svg>
+                        <div class="risk-score-display" style="font-size: 2rem; color: var(--red-alert);">75</div>
+                        <div class="risk-label" style="background-color: var(--red-alert);">HIGH</div>
+                    </div>
+                    <div class="risk-text-area">
+                        <h3 class="risk-high-alert">Significant Acute Health Risk Detected</h3>
+                        <p>The patient's current calculated **Acute Risk Score is 75 (High)**. This is a critical elevation driven primarily by a **Respiratory Rate of 22 breaths/min** and a **Temperature of 38.1°C**. Immediate clinical review and intervention are strongly advised to stabilize the vital signs and address the underlying cause.</p>
+                    </div>
+                </div>
+
+                <div class="key-vitals-snapshot">
+                    <div class="vital-item">
+                        <i class="fas fa-heartbeat vital-icon"></i>
+                        <span>Heart Rate (BPM)</span>
+                        <div class="vital-value">72</div>
+                    </div>
+                    <div class="vital-item">
+                        <i class="fas fa-wind vital-icon" style="color: var(--red-alert);"></i>
+                        <span>Resp. Rate (Breaths/min)</span>
+                        <div class="vital-value" style="color: var(--red-alert);">22</div>
+                    </div>
+                    <div class="vital-item">
+                        <i class="fas fa-thermometer-half vital-icon" style="color: var(--red-alert);"></i>
+                        <span>Temperature (°C)</span>
+                        <div class="vital-value" style="color: var(--red-alert);">38.1</div>
+                    </div>
+                    <div class="vital-item">
+                        <i class="fas fa-lungs vital-icon"></i>
+                        <span>O₂ Sat (%)</span>
+                        <div class="vital-value">95</div>
+                    </div>
+                </div>
+
+                <div class="card long-term-trend" style="margin-top: 30px; box-shadow: none; border-top: 1px solid var(--color-divider); padding-top: 30px;">
+                    <h2 class="card-header"><i class="fas fa-notes-medical"></i> Clinical Observations</h2>
+                    <p style="font-size: 0.95rem; color: var(--dark-text);">
+                        **Respiratory:** Patient is tachypneic. Shallow breathing observed. O₂ Sat has dipped to 95% from a baseline of 97-98%. This is the primary concern. <br><br>
+                        **Infection Markers (Simulated):** Estimated White Blood Cell count is elevated (15.2 x 10³/µL, high). CRP is also elevated (12 mg/L, high). Suggesting a possible acute infection process. <br><br>
+                        **Action Taken:** Care provider notified at 21:35. Recommendation for further lab tests and immediate oxygen therapy if O₂ Sat drops below 94%.
+                    </p>
+                </div>
+            </div>
+            
+        </div>
+
+        <div id="lab-content" class="content-view lab-view">
+            <div class="header-bar">
+                <h1>Lab Results & Documents</h1>
+            </div>
+            <div class="lab-grid">
+                <div class="recent-results-card">
+                    <h2 class="lab-card-title"><i class="fas fa-list-alt"></i> Recent Results</h2>
+                    <ul class="results-list">
+                        <li class="result-item">
+                            <div class="result-info">
+                                <span class="result-name">Complete Blood Count (CBC)</span>
+                                <span class="result-date">2025-12-10</span>
+                            </div>
+                            <div class="result-actions">
+                                <a href="#">View PDF</a>
+                            </div>
+                        </li>
+                        <li class="result-item">
+                            <div class="result-info">
+                                <span class="result-name">Comprehensive Metabolic Panel (CMP)</span>
+                                <span class="result-date">2025-12-10</span>
+                            </div>
+                            <div class="result-actions">
+                                <a href="#">View PDF</a>
+                            </div>
+                        </li>
+                        <li class="result-item">
+                            <div class="result-info">
+                                <span class="result-name">Sputum Culture</span>
+                                <span class="result-date">2025-12-05</span>
+                            </div>
+                            <div class="result-actions">
+                                <a href="#">View PDF</a>
+                            </div>
+                        </li>
+                        <li class="result-item">
+                            <div class="result-info">
+                                <span class="result-name">ECG Report</span>
+                                <span class="result-date">2025-11-28</span>
+                            </div>
+                            <div class="result-actions">
+                                <a href="#">View PDF</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="upload-card">
+                    <h2 class="lab-card-title"><i class="fas fa-upload"></i> Upload New Results</h2>
+                    
+                    <div class="upload-box" onclick="document.getElementById('lab_file_input').click();">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <div class="file-upload-text">
+                            <strong>Drag & drop your files here</strong>
+                            <span>or click to browse your computer</span>
+                        </div>
+                        <button type="button" class="browse-button">Browse Files</button>
+                        <input type="file" id="lab_file_input" accept=".pdf,.jpg,.png" multiple>
+                    </div>
+
+                    <p class="manual-entry-note">
+                        Need to manually input data from a physical report? Use the dedicated entry tool.
+                    </p>
+                    <button type="button" class="manual-entry-button" onclick="alert('Opening Manual Entry Form...');">
+                        <i class="fas fa-pencil-alt"></i> Manual Lab Data Entry
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="simulation-content" class="content-view simulation-view">
+            <div class="header-bar">
+                <h1>Acute Risk Simulation</h1>
+            </div>
+            <div class="simulation-card">
+                <div class="simulation-header">
+                    <h2>What-If Scenario Analysis</h2>
+                    <p>Modify key vital signs below to see the simulated impact on the patient's acute risk score.</p>
+                </div>
+                <form onsubmit="runSimulation(); return false;">
+
+                    <div class="vitals-form-grid">
+                        <div class="input-group">
+                            <label for="simHeartRate"><i class="fas fa-heartbeat"></i> Heart Rate (BPM)</label>
+                            <input type="number" id="simHeartRate" name="simHeartRate" placeholder="e.g., 72" value="72">
+                        </div>
+                        <div class="input-group">
+                            <label for="simRespiratoryRate"><i class="fas fa-wind"></i> Respiratory Rate (breaths/min)</label>
+                            <input type="number" id="simRespiratoryRate" name="simRespiratoryRate" placeholder="e.g., 18" value="18">
+                        </div>
+                        <div class="input-group">
+                            <label for="simO2Sat"><i class="fas fa-lungs"></i> O₂ Saturation (%)</label>
+                            <input type="number" id="simO2Sat" name="simO2Sat" placeholder="e.g., 98" value="98">
+                        </div>
+                        <div class="input-group">
+                            <label for="simTemperature"><i class="fas fa-thermometer-half"></i> Temperature (°C)</label>
+                            <input type="number" id="simTemperature" name="simTemperature" step="0.1" placeholder="e.g., 37.0" value="37.0">
+                        </div>
+                        <div class="input-group">
+                            <label for="simHypoxiaSeverity"><i class="fas fa-frown-open"></i> Hypoxia Severity</label>
+                            <select id="simHypoxiaSeverity" name="simHypoxiaSeverity">
+                                <option value="none">None</option>
+                                <option value="mild">Mild</option>
+                                <option value="moderate" selected>Moderate</option>
+                                <option value="severe">Severe</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="simIntervention"><i class="fas fa-pills"></i> Intervention Applied</label>
+                            <select id="simIntervention" name="simIntervention">
+                                <option value="none">None</option>
+                                <option value="oxygen">Oxygen Therapy</option>
+                                <option value="antibiotics">Antibiotics</option>
+                            </select>
+                        </div>
+                        <div class="input-group" style="grid-column: 1 / -1; max-width: 50%; margin: 0 auto;">
+                           <button type="button" class="save-button" style="max-width: none;" onclick="runSimulation()">
+                             <i class="fas fa-redo-alt"></i> Run Simulation
+                             </button>
+
+                        </div>
+                    </div>
+                </form>
+
+                <hr style="margin: 40px 0; border: 0; border-top: 1px solid var(--color-divider);">
+
+                <div class="simulated-risk-display">
+                    <h2 class="card-header"><i class="fas fa-flask"></i> Simulated Acute Risk Score</h2>
+                    <div class="gauge-container">
+                        <svg class="gauge-svg" width="160" height="80" viewBox="0 0 160 80">
+                            <path d="M 20 80 A 60 60 0 0 1 140 80" fill="none" stroke="#e0e0e0" stroke-width="15" />
+                            <path d="M 20 80 A 60 60 0 0 1 66 38" fill="none" stroke="var(--low-risk)" stroke-width="15" />
+                            <path d="M 66 38 A 60 60 0 0 1 114 38" fill="none" stroke="var(--moderate-risk)" stroke-width="15" />
+                            <path d="M 114 38 A 60 60 0 0 1 140 80" fill="none" stroke="var(--red-alert)" stroke-width="15" />
+                            <path d="M 80 80 L 80 20 L 80 80" fill="none" stroke="var(--dark-text)" stroke-width="2" transform="rotate(27 80 80)" />
+                        </svg>
+                        <div class="sim-risk-score" style="color: var(--low-risk);">30</div>
+                        <div class="sim-risk-label" style="background-color: var(--low-risk);">LOW</div>
+                    </div>
+                    <p class="sim-scenario-label">Current Simulation: **Oxygen Therapy** applied with an O₂ Sat of **98%**.</p>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="assistant-content" class="content-view settings-view" style="max-width: 800px; display: none;">
+            <div class="header-bar">
+                <h1>AI Health Assistant</h1>
+            </div>
+            <div class="settings-card">
+                <h2 class="settings-card-title"><i class="fas fa-comments"></i> Consult the Virtual Care Assistant</h2>
+                <div id="chatBox"
+                    style="min-height: 200px; border: 1px solid var(--color-divider); border-radius: 8px; padding: 20px; background-color: var(--light-bg); text-align: left; margin-bottom: 20px; overflow-y: auto;">
+                    <p style="color: var(--primary-teal); font-weight: bold; margin-bottom: 10px;">Assistant:</p>
+                    <p style="color: var(--medium-text);">"Hello, Jane. I see a recent spike in your Respiratory Rate. What specifically would you like to discuss today? You can ask about your symptoms, risk score, or medication schedule."</p>
+                </div>
+                
+              <form onsubmit="sendMessage(); return false;" 
+                 style="display: flex; gap: 10px;">
+
+                    <input type="text" id="assistantInput"
+                       placeholder="Type your question or concern here..." 
+                       class="settings-input" style="margin-top: 0; flex-grow: 1;" required>
+
+                    <button type="submit" class="update-button" style="width: 150px; margin-top: 0; padding: 10px 15px;"><i class="fas fa-paper-plane"></i> Send</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="settings-content" class="content-view settings-view" style="max-width: 800px; display: none;">
+            <div class="header-bar">
+                <h1>Portal Settings</h1>
+            </div>
+            <div class="settings-card">
+                <h2 class="settings-card-title"><i class="fas fa-cog"></i> User Preferences & Security</h2>
+                
+                <div class="setting-section">
+                    <label class="setting-label">Profile Information</label>
+                    <input type="text" class="settings-input" placeholder="Name" value="Jane Doe">
+                    <input type="email" class="settings-input" placeholder="Email" value="jane.doe@email.com">
+                </div>
+
+                <div class="setting-section">
+                    <label class="setting-label">Password</label>
+                    <input type="password" id="currentPassword" class="settings-input" placeholder="Current password">
+                    <input type="password" id="newPassword" class="settings-input" placeholder="New password">
+                    <input type="password" id="confirmPassword" class="settings-input" placeholder="Confirm new password">
+
+                    <button type="button" class="update-button" onclick="updatePassword()">
+                      <i class="fas fa-key"></i> Update Password
+                      </button>
+
+
+                </div>
+
+                <div class="setting-section">
+                    <label class="setting-label">Notification Settings</label>
+                    <div class="notification-checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" checked> Email Alerts for High Risk
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" checked> SMS Alerts for Critical Vitals
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox"> Weekly Health Summary Report
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-section">
+                    <label class="setting-label">Data Management</label>
+                    <p class="current-setting-value">Export all historical data (Vitals, History, Lab Results).</p>
+                    <button type="button" class="download-button"><i class="fas fa-download"></i> Download Full Data Archive (.csv)</button>
+                </div>
+
+            </div>
+        </div>
+
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const navLinks = document.querySelectorAll('.nav-link');
+                const views = {
+                    'dashboard': document.getElementById('dashboard-content'),
+                    'vitals': document.getElementById('vitals-content'),
+                    'history': document.getElementById('history-content'),
+                    'report': document.getElementById('report-content'),
+                    'lab': document.getElementById('lab-content'),
+                    'simulation': document.getElementById('simulation-content'),
+                    'assistant': document.getElementById('assistant-content'),
+                    'settings': document.getElementById('settings-content'),
+                };
+
+                // Function to show a specific view
+                function showView(viewName) {
+                    // Hide all views
+                    Object.values(views).forEach(view => {
+                        if (view) view.style.display = 'none';
+                    });
+
+                    // Remove 'active' class from all links
+                    navLinks.forEach(link => link.classList.remove('active'));
+
+                    // Show the selected view and set the active link
+                    const selectedView = views[viewName];
+                    const selectedLink = document.querySelector(`.nav-link[data-view="${viewName}"]`);
+                    
+                    if (selectedView) {
+                        selectedView.style.display = 'flex'; // Use flex for main content views
+                    }
+
+                    if (selectedLink) {
+                        selectedLink.classList.add('active');
+                    }
+                }
+
+                // Initial load: determine which view to show
+                const initialView = window.location.hash ? window.location.hash.substring(1) : 'dashboard';
+                // Check if the initial hash corresponds to a valid data-view attribute
+                const initialViewName = document.querySelector(`.nav-link[href="#${initialView}"]`) ? initialView : 'dashboard';
+                
+                showView(initialViewName.replace('input-vitals', 'vitals').replace('patient-history', 'history').replace('health-report', 'report').replace('lab-results', 'lab'));
+
+                // Add event listeners to navigation links
+                navLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const viewName = e.currentTarget.getAttribute('data-view');
+                        
+                        // Update the URL hash without reloading
+                        history.pushState(null, null, `#${e.currentTarget.getAttribute('href').split('#')[1]}`);
+
+                        showView(viewName);
+                    });
+                });
+
+                // Handle back/forward button navigation
+                window.addEventListener('popstate', () => {
+                    const hash = window.location.hash.substring(1);
+                    const viewName = document.querySelector(`.nav-link[href="#${hash}"]`)?.getAttribute('data-view') || 'dashboard';
+                    showView(viewName);
+                });
+
+
+                // Optional: Implement the gauge needle rotation for the Dashboard (45 degrees for 45%)
+                const gaugeNeedle = document.getElementById('needle');
+                if (gaugeNeedle) {
+                    // Assuming a 180-degree range, starting at -90deg (0%) and ending at 90deg (100%)
+                    const riskScore = 45; // Get this dynamically in a real app
+                    const rotation = (riskScore / 100) * 180 - 90; 
+                    gaugeNeedle.style.transform = `rotate(${rotation}deg)`;
+                }
+                
+                // Optional: Implement the gauge needle rotation for the Report (75 degrees for 75%)
+                const reportNeedle = document.getElementById('needle-report');
+                if (reportNeedle) {
+                    // Assuming a 180-degree range, starting at -90deg (0%) and ending at 90deg (100%)
+                    const riskScore = 75; // Get this dynamically in a real app
+                    const rotation = (riskScore / 100) * 180 - 90; 
+                    reportNeedle.style.transform = `rotate(${rotation}deg)`;
+                }
+
+                // Optional: Implement the gauge needle rotation for the Simulation (30 degrees for 30%)
+                const simNeedle = document.querySelector('.simulated-risk-display path:last-child'); // Target the last path in the SVG
+                if (simNeedle) {
+                    // Assuming a 180-degree range, starting at -90deg (0%) and ending at 90deg (100%)
+                    const riskScore = 30; // Get this dynamically in a real app
+                    const rotation = (riskScore / 100) * 180 - 90; 
+                    simNeedle.style.transform = `rotate(${rotation}deg)`;
+                }
+            });
+        </script>
+
+    </div>
+    <script>
+    document.getElementById("predictForm").addEventListener("submit", async function (e) {
+    e.preventDefault(); // page reload stop
+
+    const data = {
+        age: Number(document.getElementById("age").value),
+        gender: document.getElementById("gender").value,
+        heart_rate: Number(document.getElementById("heart_rate").value),
+        temperature: Number(document.getElementById("temperature").value),
+        respiratory_rate: Number(document.getElementById("respiratory_rate").value),
+        systolic_bp: Number(document.getElementById("systolic_bp").value),
+        diastolic_bp: Number(document.getElementById("diastolic_bp").value),
+        mental_status: Number(document.getElementById("mental_status").value),
+        wbc: Number(document.getElementById("wbc").value),
+        platelets: Number(document.getElementById("platelets").value),
+        creatinine: Number(document.getElementById("creatinine").value),
+        bilirubin: Number(document.getElementById("bilirubin").value),
+        lactate: Number(document.getElementById("lactate").value)
+    };
+
+    try {
+        const response = await fetch("/patient/predict", {
+
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Show result box
+            document.getElementById("predictionResult").style.display = "block";
+
+            // Prediction text
+            document.getElementById("predText").innerText =
+                result.prediction === 1 ? "Sepsis Detected" : "No Sepsis";
+
+            document.getElementById("riskText").innerText = result.risk_level;
+
+            document.getElementById("probText").innerText =
+                (result.probability * 100).toFixed(2) + "%";
+        } else {
+            alert(result.error || "Prediction failed");
+        }
+
+    } catch (error) {
+        alert("Server error");
+        console.error(error);
+    }
+});
+</script>
+
+<script>
+/* =========================
+   VIEW NAVIGATION
+========================= */
+document.querySelectorAll(".nav-link").forEach(link => {
+  link.addEventListener("click", () => {
+    document.querySelectorAll(".content-view").forEach(v => v.style.display = "none");
+
+    const view = link.dataset.view;
+    document.getElementById(view + "-content").style.display = "block";
+
+    document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active"));
+    link.classList.add("active");
+
+    if (view === "history") loadHistory();
+    if (view === "report") loadReport();
+  });
+});
+
+/* =========================
+   PATIENT HISTORY
+========================= */
+async function loadHistory() {
+  const res = await fetch("/patient/history");
+  const data = await res.json();
+
+  const tbody = document.querySelector(".history-table tbody");
+  tbody.innerHTML = "";
+
+  data.forEach(r => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${r.timestamp}</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>${r.risk_level}</td>
+        <td>${r.prediction}</td>
+      </tr>
+    `;
+  });
+}
+
+/* =========================
+   HEALTH REPORT
+========================= */
+async function loadReport() {
+  const res = await fetch("/patient/report");
+  const data = await res.json();
+
+  document.querySelector(".report-header h2").innerText =
+    `Total Predictions: ${data.total_predictions}`;
+
+  document.querySelector(".risk-score-display").innerText =
+    data.average_probability + "%";
+
+  document.querySelector(".risk-label").innerText =
+    data.highest_risk;
+}
+
+/* =========================
+   SIMULATION
+========================= */
+async function runSimulation() {
+  const res = await fetch("/patient/simulate");
+  const data = await res.json();
+
+  document.querySelector(".sim-risk-score").innerText =
+    Math.round((data.temperature - 36) * 10);
+
+  document.querySelector(".sim-risk-label").innerText = "SIMULATED";
+}
+
+
+/* =========================
+   ASSISTANT (CHATBOT)
+========================= */
+
+async function sendMessage() {
+  const input = document.getElementById("assistantInput");
+  const chatBox = document.getElementById("chatBox");
+
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  try {
+    const res = await fetch("/patient/assistant", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: msg })
+    });
+
+    const data = await res.json();
+
+    chatBox.innerHTML += `<p><strong>You:</strong> ${msg}</p>`;
+
+    // 🔑 FIX: handle different reply formats
+    let replyText = "";
+
+    if (typeof data.reply === "string") {
+      replyText = data.reply;
+    } else if (typeof data.reply === "object" && data.reply !== null) {
+      // if your response generator returns an object
+      replyText = data.reply.text || JSON.stringify(data.reply);
+    } else if (data.error) {
+      replyText = "Error: " + data.error;
+    } else {
+      replyText = "No response from assistant.";
+    }
+
+    chatBox.innerHTML += `<p><strong>Assistant:</strong> ${replyText}</p>`;
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+    input.value = "";
+  } catch (e) {
+    chatBox.innerHTML += `<p style="color:red;">Server error</p>`;
+  }
+}
+
+
+
+
+/* =========================
+   SETTINGS
+========================= */
+async function saveSettings() {
+  const inputs = document.querySelectorAll(".settings-input");
+  const data = {};
+
+  inputs.forEach(i => data[i.placeholder] = i.value);
+
+  await fetch("/patient/settings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  alert("Settings saved");
+}
+
+
+async function updatePassword() {
+  const current = document.getElementById("currentPassword").value;
+  const newPass = document.getElementById("newPassword").value;
+  const confirm = document.getElementById("confirmPassword").value;
+
+  if (!current || !newPass || !confirm) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  if (newPass !== confirm) {
+    alert("New passwords do not match");
+    return;
+  }
+
+  if (newPass.length < 6) {
+    alert("Password must be at least 6 characters");
+    return;
+  }
+
+  const res = await fetch("/patient/update-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      current_password: current,
+      new_password: newPass
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    alert("Password updated successfully!");
+    document.getElementById("currentPassword").value = "";
+    document.getElementById("newPassword").value = "";
+    document.getElementById("confirmPassword").value = "";
+  } else {
+    alert(data.error || "Password update failed");
+  }
+}
+
+</script>
+
+
+</body>
+</html>

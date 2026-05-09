@@ -1,0 +1,1919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - Hospital Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-teal: #00a88e;
+            --primary-dark: #00796b;
+            --bg-light: #f8fafc;
+            --sidebar-width: 240px;
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 400; }
+
+        body { display: flex; background-color: var(--bg-light); color: var(--text-dark); height: 100vh; overflow: hidden; }
+
+        /* --- Sidebar --- */
+        .sidebar { width: var(--sidebar-width); background-color: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
+        .logo { padding: 0 25px 30px; color: var(--primary-teal); font-size: 1.2rem; display: flex; align-items: center; gap: 10px; font-weight: 400; }
+        .nav-item { padding: 12px 25px; color: var(--text-gray); text-decoration: none; display: flex; align-items: center; transition: 0.3s; font-size: 0.95rem; gap: 12px; cursor: pointer; border-left: 4px solid transparent; }
+        .nav-item:hover { background-color: #f1f5f9; color: var(--primary-teal); }
+        .nav-item.active { background-color: #f0fdfa; color: var(--primary-teal); border-left-color: var(--primary-teal); }
+
+        /* --- Main Content --- */
+        .main-content { flex: 1; padding: 20px 40px; overflow-y: auto; display: flex; flex-direction: column; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-shrink: 0; }
+        .search-container { position: relative; }
+        .search-bar { background: #fff; border: 1px solid var(--border); padding: 10px 20px 10px 40px; border-radius: 12px; width: 350px; outline: none; transition: 0.2s; }
+        .search-bar:focus { border-color: var(--primary-teal); }
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-gray); }
+
+        .view { display: none; animation: fadeIn 0.3s ease; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .banner { background: linear-gradient(135deg, var(--primary-teal) 0%, var(--primary-dark) 100%); color: white; padding: 30px; border-radius: 20px; margin-bottom: 30px; }
+        .banner h1 { font-weight: 400; font-size: 2rem; }
+
+        /* Stats & UI */
+        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 15px; border: 1px solid var(--border); }
+        .stat-label { color: var(--text-gray); font-size: 0.7rem; text-transform: uppercase; margin-bottom: 8px; }
+        .stat-value { font-size: 1.8rem; font-weight: 400; }
+
+        .section-header { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .section-header h2 { font-weight: 400; }
+        
+        .table-card { 
+            background: white; 
+            border-radius: 15px; 
+            overflow-x: auto; 
+            border: 1px solid var(--border); 
+            max-width: 100%;
+        }
+        
+        .table-card::-webkit-scrollbar { height: 8px; }
+        .table-card::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        .table-card::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .table-card::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+        th { text-align: left; background: #f8fafc; padding: 15px 25px; color: var(--text-gray); font-size: 0.7rem; text-transform: uppercase; border-bottom: 1px solid var(--border); font-weight: 400; }
+        td { padding: 15px 25px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; white-space: nowrap; }
+        tbody tr:hover { background-color: #f8fafc; cursor: pointer; }
+
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; text-transform: uppercase; font-weight: 400; }
+        .badge-danger { background: #fee2e2; color: var(--danger); }
+        .badge-success { background: #dcfce7; color: var(--success); }
+        .badge-warning { background: #fef3c7; color: var(--warning); }
+        .badge-info { background: #e0e7ff; color: #4f46e5; }
+
+        /* Modals & Forms */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(4px); }
+        .modal-content { background: var(--white); width: 95%; max-width: 800px; max-height: 90vh; border-radius: 20px; overflow-y: auto; position: relative; }
+        .modal-header { padding: 20px 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #fff; position: sticky; top: 0; z-index: 10; }
+        .modal-header h2 { font-weight: 400; font-size: 1.5rem; }
+        .modal-body { padding: 30px; }
+        
+        form label { font-weight: 400; font-size: 0.9rem; color: var(--text-gray); margin-bottom: 4px; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .form-group.full-width { grid-column: span 2; }
+        .form-control { padding: 10px 15px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.9rem; outline: none; background: white; font-weight: 400; }
+        
+        .phone-input-group { display: flex; gap: 8px; }
+        .country-select { width: 160px; text-overflow: ellipsis; }
+
+        .modal-footer { padding: 20px 30px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; background: #fff; position: sticky; bottom: 0; }
+        
+        .btn-add { background-color: var(--primary-teal); color: white; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 400; }
+        .btn-danger { background-color: var(--danger); color: white; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: 400; }
+        .btn-secondary { background: #f1f5f9; color: var(--text-dark); padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: 400; }
+
+        /* Analytics */
+        .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .chart-card { background: white; padding: 25px; border-radius: 20px; border: 1px solid var(--border); height: 350px; display: flex; flex-direction: column; }
+        .chart-card h4 { margin-bottom: 15px; font-size: 0.9rem; color: var(--text-gray); font-weight: 400; }
+
+        /* Settings View */
+        .settings-container { display: grid; grid-template-columns: 1fr 1.5fr; gap: 25px; }
+        .settings-card { background: white; border-radius: 15px; border: 1px solid var(--border); padding: 25px; margin-bottom: 25px; }
+        .settings-card h3 { font-weight: 400; margin-bottom: 15px; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); font-weight: 400; }
+        .setting-row:last-child { border: none; }
+        .log-list { height: 300px; overflow-y: auto; font-size: 0.85rem; color: var(--text-gray); }
+        .log-item { padding: 10px 0; border-bottom: 1px dotted var(--border); font-weight: 400; }
+
+        #notification { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 12px 24px; border-radius: 10px; display: none; z-index: 3000; font-weight: 400; }
+        /* Reset all form controls and labels to normal weight */
+        input,
+        textarea,
+        select,
+        option,
+        button,
+        label,
+        legend {
+            font-weight: 400 !important;
+            font-family: 'Inter', 'Segoe UI', sans-serif !important;
+          }
+.phone-input-group {
+    display: flex;
+    gap: 10px; /* space between */
+}
+
+.phone-input-group .country-select {
+    flex: 0 0 140px;   /* fixed small width */
+}
+
+.phone-input-group input {
+    flex: 1;          /* takes remaining space (wide) */
+}
+
+/* Fix placeholder font-weight */
+        input::placeholder,
+        textarea::placeholder {
+            font-weight: 400 !important;
+          }
+
+/* Explicit fix for select and option bold rendering */
+        select, select option {
+            font-weight: 400 !important;
+          }
+
+
+          /* Force all form inputs, selects, and labels to normal weight */
+          .form-group input.form-control,
+          .form-group select.form-control,
+          .form-group textarea.form-control,
+          .form-group label {
+                   font-weight: 400 !important;  /* normal weight */
+                   font-family: 'Inter', 'Segoe UI', sans-serif !important;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 400 !important;  /* normal weight */
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.settings-container {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr;   /* wider left, decent right */
+    gap: 25px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.settings-column {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.settings-card {
+    background: #fff;
+    padding: 20px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    width: 100%;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.log-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.log-item {
+    background: #f5f7fa;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+/* ===== System Activity Card ===== */
+
+.settings-card h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #222;
+}
+
+.settings-card h4 {
+    font-size: 15px;
+    margin: 10px 0;
+    color: #444;
+    font-weight: 600;
+}
+
+/* Activity Log */
+
+.log-list {
+    max-height: 220px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.log-item {
+    background: #f2f5f9;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 8px;
+    border-left: 4px solid #00a88e; /* accent line */
+}
+
+/* Scrollbar (optional but looks good) */
+
+.log-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.log-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+/* Buttons */
+
+.btn-add {
+    background: #00a88e;
+    color: white;
+    border: none;
+    padding: 11px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.btn-add:hover {
+    background: #00a88e;
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 11px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+}
+
+/* Divider */
+
+.settings-card hr {
+    border: none;
+    height: 1px;
+    background: #e5e7eb;
+}
+
+/* System Info text */
+
+.settings-card p {
+    font-size: 14px;
+    margin: 6px 0;
+    color: #555;
+}
+
+/* Optional badge look */
+
+.settings-card p strong {
+    color: #111;
+}
+/* ===== System Limits & Appearance ===== */
+
+.settings-card {
+    background: #ffffff;
+    padding: 20px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Headings */
+
+.settings-card h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #222;
+}
+
+/* Form Groups */
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #444;
+    font-weight: 500;
+}
+
+/* Inputs & Select */
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #00a88e;
+    box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
+}
+
+/* Setting rows (toggle style layout) */
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-size: 14px;
+    color: #444;
+}
+
+/* Checkbox slightly bigger (modern look) */
+
+.setting-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* Number input arrows clean */
+
+input[type="number"] {
+    appearance: none;
+    -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Select styling */
+
+select.form-control {
+    cursor: pointer;
+    background-color: #fff;
+}
+/* ===== DARK MODE THEME ===== */
+
+body.dark-mode {
+    background: #0f172a;
+    color: #e5e7eb;
+}
+
+/* Cards */
+
+body.dark-mode .settings-card {
+    background: #1e293b;
+    box-shadow: none;
+}
+
+/* Headings */
+
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4 {
+    color: #f1f5f9;
+}
+
+/* Text */
+
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode label {
+    color: #cbd5f5;
+}
+
+/* Inputs */
+
+body.dark-mode .form-control {
+    background: #0f172a;
+    color: #e5e7eb;
+    border: 1px solid #334155;
+}
+
+body.dark-mode .form-control::placeholder {
+    color: #94a3b8;
+}
+
+/* Logs */
+
+body.dark-mode .log-item {
+    background: #0f172a;
+    border-left-color: #00a88e;
+}
+
+/* Divider */
+
+body.dark-mode hr {
+    background: #334155;
+}
+
+/* Buttons */
+
+body.dark-mode .btn-add {
+    background: #00796b;
+}
+body, .settings-card, .form-control {
+    transition: all 0.3s ease;
+}
+
+body.dark-mode .btn-danger {
+    background: #ef4444;
+}
+/* ===== SIDEBAR DARK MODE ===== */
+
+body.dark-mode .sidebar,
+body.dark-mode .side-bar,
+body.dark-mode .nav-sidebar,
+body.dark-mode .menu,
+body.dark-mode #sidebar {
+    background: #020617;
+}
+
+/* Sidebar links */
+
+body.dark-mode .sidebar a,
+body.dark-mode .sidebar span,
+body.dark-mode .sidebar li {
+    color: #e5e7eb;
+}
+
+/* Hover effect */
+
+body.dark-mode .sidebar a:hover {
+    background: #1e293b;
+}
+
+/* Active item */
+
+body.dark-mode .sidebar .active {
+    background: #00796b;
+    color: white;
+}
+
+
+/* Responsive */
+@media (max-width: 900px) {
+    .settings-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+    <div id="notification">Action completed.</div>
+
+    <!-- MODALS (Patients, Doctors, Attendants, Appointments - all using the new country codes) -->
+    <div id="patientModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header"><h2 id="pModalTitle">Patient Profile</h2><button class="btn-secondary" style="padding: 5px" onclick="closeModal('patientModal')"><i class="fas fa-times"></i></button></div>
+            <div class="modal-body">
+                <form id="patientForm">
+                    <input type="hidden" id="pId">
+                    <div class="form-grid">
+                        <div class="form-group"><label>Full Name</label><input type="text" id="pName" class="form-control" placeholder="Enter your full name" required></div>
+                        <div class="form-group">
+                          <label>Username</label>
+                          <input type="text" id="pUsername" class="form-control" placeholder="Enter username" required>
+                        </div>
+                        <div class="form-group">
+                          <label>Email Address</label>
+                          <input type="email" id="pEmail" class="form-control" placeholder="patient@gmail.com">
+                        </div>
+                        <div class="form-group" style="position: relative;">
+                          <label>Password</label>
+                          <input type="password" id="pPassword" class="form-control" placeholder="Enter password" required>
+                          <i class="fa fa-eye"
+                            style="position:absolute; right:15px; top:38px; cursor:pointer;"
+                            onclick="togglePassword('pPassword', this)"></i>
+                        </div>
+
+                        <div class="form-group" style="position: relative;">
+                          <label>Confirm Password</label>
+                          <input type="password" id="pConfirmPassword" class="form-control" placeholder="Confirm password" required>
+                          <i class="fa fa-eye"
+                            style="position:absolute; right:15px; top:38px; cursor:pointer;"
+                            onclick="togglePassword('pConfirmPassword', this)"></i>
+                        </div>
+                        <div class="form-group"><label>Gender</label><select id="pGender" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div>
+                        <div class="form-group"><label>Date of Birth</label><input type="date" id="pDob" class="form-control" onchange="calculateAge('pDob','pAge')"></div>
+                        <div class="form-group"><label>Age</label><input type="number" id="pAge" class="form-control" placeholder="Enter your age" readonly></div>
+                        <div class="form-group"><label>Blood Group</label><select id="pBlood" class="form-control"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+                        <div class="form-group">
+                            <label>Contact Number</label>
+                            <div class="phone-input-group">
+                                <select id="pCode" class="form-control country-select"></select>
+                                <input type="text" id="pContact" class="form-control" placeholder="Contact Number">
+                            </div>
+                        </div>
+                        <div class="form-group"><label>Admission Type</label><select id="pAdmType" class="form-control"><option>Emergency</option><option>Elective</option></select></div>
+                        <div class="form-group"><label>Admission Date</label><input type="date" id="pAdmDate" class="form-control"></div>
+                        <div class="form-group full-width"><label>Primary Diagnosis</label><input type="text" id="pDiagnosis" class="form-control" placeholder="e.g. Sepsis, Pneumonia, Diabetes"></div>
+                        <div class="form-group full-width"><label>Address</label><textarea id="pAddress" class="form-control" rows="2" placeholder="House No, Street, Area, City"></textarea></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-danger" id="pDeleteBtn"
+                 onclick="deletePatient()">Delete</button>
+                <button class="btn-add" id="pSaveBtn" onclick="savePatient()">Save Patient</button>
+                <button class="btn-secondary" onclick="closeModal('patientModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="doctorModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header"><h2 id="dModalTitle">Doctor Profile</h2><button class="btn-secondary" style="padding: 5px" onclick="closeModal('doctorModal')"><i class="fas fa-times"></i></button></div>
+            <div class="modal-body">
+                <form id="doctorForm">
+                    <input type="hidden" id="dId">
+                    <div class="form-grid">
+                        <div class="form-group"><label>Full Name</label><input type="text" id="dName" class="form-control" placeholder="Enter your full name" required></div>
+                        <div class="form-group">
+                          <label>Username</label>
+                          <input type="text" id="dUsername" class="form-control" placeholder="Enter username" required>
+                        </div>
+
+                        <div class="form-group">
+                          <label>Email Address</label>
+                          <input type="email" id="dEmail" class="form-control" placeholder="doctor@gmail.com">
+                        </div>
+                        <div class="form-group" style="position: relative;">
+                          <label>Password</label>
+                          <input type="password" id="dPassword" class="form-control" placeholder="Enter password" required>
+                          <i class="fa fa-eye"
+                            style="position:absolute; right:15px; top:38px; cursor:pointer;"
+                          onclick="togglePassword('dPassword', this)"></i>
+                        </div>
+
+                        <div class="form-group" style="position: relative;">
+                          <label>Confirm Password</label>
+                          <input type="password" id="dConfirmPassword" class="form-control" placeholder="Confirm password" required>
+                          <i class="fa fa-eye"
+                            style="position:absolute; right:15px; top:38px; cursor:pointer;"
+                            onclick="togglePassword('dConfirmPassword', this)"></i>
+                        </div>
+
+                        <div class="form-group"><label>Gender</label><select id="dGender" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div>
+                        <div class="form-group">
+                          <label>Date of Birth</label>
+                          <input type="date" id="dDob" class="form-control" onchange="calculateAge('dDob','dAge')">
+                        </div>
+
+                        <div class="form-group">
+                          <label>Age</label>
+                          <input type="number" id="dAge" class="form-control" placeholder="Enter your age" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Number</label>
+                            <div class="phone-input-group">
+                                <select id="dCode" class="form-control country-select"></select>
+                                <input type="text" id="dPhone" class="form-control" placeholder="Contact Number">
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Address</label>
+                            <textarea id="dAddress" class="form-control" rows="2" placeholder="House No, Street, Area, City"></textarea>
+                        </div>
+
+                        <div class="form-group"><label>Specialization</label><input type="text" id="dSpec" class="form-control" placeholder="Enter your Specialization"></div>
+                        <div class="form-group"><label>Department</label><select id="dDept" class="form-control"><option>General OPD</option><option>Cardiology</option><option>Neurology</option><option>Emergency</option></select></div>
+                        
+                        <div class="form-group"><label>Availability Status</label><select id="dStatus" class="form-control"><option>Available</option><option>On Leave</option></select></div>
+                        <div class="form-group"><label>Years of Exp</label><input type="number" id="dExp" class="form-control" placeholder="Enter years of experience"></div>
+                        
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-add" id="dSaveBtn" onclick="saveDoctor()">Save Doctor</button>
+
+                <button class="btn-danger" id="dDeleteBtn" onclick="deleteDoctor('doctors', 'dId', 'doctorModal')">Delete</button>
+                <button class="btn-secondary" onclick="closeModal('doctorModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="attendantModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header"><h2 id="aModalTitle">Attendant Profile</h2><button class="btn-secondary" style="padding: 5px" onclick="closeModal('attendantModal')"><i class="fas fa-times"></i></button></div>
+            <div class="modal-body">
+                <form id="attendantForm">
+                    <input type="hidden" id="aId">
+                    <div class="form-grid">
+                        <div class="form-group"><label>Full Name</label><input type="text" id="aName" class="form-control" placeholder="Enter your full name" required></div>
+                        <div class="form-group">
+                          <label>Username</label>
+                          <input type="text" id="aUsername" class="form-control" placeholder="Enter username" required>
+                        </div>
+                        <div class="form-group">
+                          <label>Email Address</label>
+                          <input type="email" id="aEmail" class="form-control" placeholder="attendant@gmail.com">
+                        </div>
+                        
+
+                      <div class="form-group" style="position: relative;">
+                        <label>Password</label>
+                        <input type="password" id="aPassword" class="form-control" placeholder="Enter password" required>
+                        <i class="fa fa-eye"
+                          style="position:absolute; right:15px; top:38px; cursor:pointer;"
+                          onclick="togglePassword('aPassword', this)"></i>
+                      </div>
+
+                      <div class="form-group" style="position: relative;">
+                        <label>Confirm Password</label>
+                        <input type="password" id="aConfirmPassword" class="form-control" placeholder="Confirm password" required>
+                        <i class="fa fa-eye"
+                          style="position:absolute; right:15px; top:38px; cursor:pointer;"
+                          onclick="togglePassword('aConfirmPassword', this)"></i>
+                      </div>
+
+                        <div class="form-group"><label>Gender</label><select id="aGender" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div>
+                        
+                        <div class="form-group">
+                          <label>Date of Birth</label>
+                          <input type="date" id="aDob" class="form-control" onchange="calculateAge('aDob','aAge')">
+                        </div>
+
+                        <div class="form-group">
+                          <label>Age</label>
+                          <input type="number" id="aAge" class="form-control" placeholder="Enter your age" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Number</label>
+                            <div class="phone-input-group">
+                                <select id="aCode" class="form-control country-select"></select>
+                                <input type="text" id="aContact" class="form-control" placeholder="Contact Number">
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Address</label>
+                            <textarea id="aAddress" class="form-control" rows="2" placeholder="House No, Street, Area, City"></textarea>
+                        </div>
+                        <div class="form-group"><label>Role</label><select id="aRole" class="form-control"><option>Nurse</option><option>Caregiver</option><option>Assistant</option></select></div>
+                        <div class="form-group"><label>Shift</label><select id="aShift" class="form-control"><option>Morning(8AM-4PM)</option><option>Evening(4PM-12AM)</option><option>Night(12AM-8AM)</option></select></div>
+                        
+                          
+
+                        <div class="form-group full-width"><label>Notes</label><textarea id="aNotes" class="form-control" rows="2" placeholder="Enter any additional notes about the attendant"></textarea></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-add" id="aSaveBtn" onclick="saveAttendant()">Save Attendant</button>
+                <button class="btn-danger" id="aDeleteBtn" onclick="deleteAttendant()">Delete</button>
+                <button class="btn-secondary" onclick="closeModal('attendantModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="appointmentModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header"><h2 id="aptModalTitle">Schedule Appointment</h2><button class="btn-secondary" style="padding: 5px" onclick="closeModal('appointmentModal')"><i class="fas fa-times"></i></button></div>
+            <div class="modal-body">
+                <form id="appointmentForm">
+                    <input type="hidden" id="aptId">
+                    <div class="form-grid">
+                        <div class="form-group"><label>Patient</label><select id="aptPatient" class="form-control"></select></div>
+                        <div class="form-group"><label>Doctor</label><select id="aptDoctor" class="form-control"></select></div>
+                        <div class="form-group"><label>Date</label><input type="date" id="aptDate" class="form-control"></div>
+                        <div class="form-group"><label>Time</label><input type="time" id="aptTime" class="form-control"></div>
+                        <div class="form-group"><label>Status</label><select id="aptStatus" class="form-control"><option>Pending</option><option>Confirmed</option><option>Completed</option><option>Cancelled</option></select></div>
+                        <div class="form-group"><label>Reason</label><input type="text" id="aptReason" class="form-control"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+<button class="btn-danger" id="aptDeleteBtn" onclick="deleteAppointmentFromModal()">
+  Delete
+</button>                <div style="flex:1"></div>
+                <button class="btn-secondary" onclick="closeModal('appointmentModal')">Cancel</button>
+                <button class="btn-add" onclick="saveAppointment()">Save Appointment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-hospital-user"></i> Admin Portal</div>
+        <div class="nav-item active" onclick="switchView('dashboard')"><i class="fas fa-th-large"></i> Dashboard</div>
+        <div class="nav-item" onclick="switchView('patients')"><i class="fas fa-user-injured"></i> Patients</div>
+        <div class="nav-item" onclick="switchView('appointments')"><i class="fas fa-calendar-check"></i> Appointments</div>
+        <div class="nav-item" onclick="switchView('doctors')"><i class="fas fa-user-md"></i> Doctors</div>
+        <div class="nav-item" onclick="switchView('attendants')"><i class="fas fa-user-friends"></i> Attendants</div>
+        <div class="nav-item" onclick="switchView('analytics')"><i class="fas fa-chart-bar"></i> Analytics</div>
+        <div class="nav-item" onclick="switchView('settings')"><i class="fas fa-cog"></i> Settings</div>
+        <div class="patient-user" style="margin-top: auto; padding: 15px; border-top: 1px solid #ccc;">
+             Admin
+            <a href="#" class="nav-link" style="display: block; margin-top: 10px; color: #ff6347;" onclick="logoutUser()">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <div class="search-container"><i class="fas fa-search search-icon"></i><input type="text" class="search-bar" placeholder="Search..."></div>
+            <div class="user-profile">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="text-align:right"><p style="font-size:0.9rem;">Administrator</p></div>
+                    <div style="width:40px;height:40px;background:var(--primary-teal);color:white;border-radius:12px;display:flex;align-items:center;justify-content:center"><i class="fas fa-shield-alt"></i></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- VIEWS -->
+        <div id="dashboard-view" class="view active">
+            <section class="banner"><h1>System Status</h1><p>Real-time hospital resource monitoring.</p></section>
+            <section class="stats-container" id="dash-stats"></section>
+            <div class="analytics-grid">
+                <div class="chart-card"><h4>Patient Flow (Weekly)</h4><canvas id="flowChart"></canvas></div>
+                <div class="chart-card"><h4>Bed Allocation</h4><canvas id="bedChart"></canvas></div>
+            </div>
+        </div>
+
+        <div id="patients-view" class="view">
+            <div class="section-header"><h2>Patient Registry</h2><button class="btn-add" onclick="openP()"><i class="fas fa-plus"></i> New Patient</button></div>
+            <div class="table-card">
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Name</th><th>Diagnosis</th><th>Blood Group</th><th>TYPE</th><th>Age</th><th>Adm. Date</th><th>Gender</th><th>Contact</th><th>Address</th></tr>
+                    </thead>
+                    <tbody id="p-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="appointments-view" class="view">
+            <div class="section-header"><h2>Appointment Schedule</h2><button class="btn-add" onclick="openApt()"><i class="fas fa-calendar-plus"></i> New Appointment</button></div>
+            <div class="table-card"><table><thead><tr><th>Date</th><th>Patient</th><th>Doctor</th><th>Reason</th><th>Status</th></tr></thead><tbody id="apt-table"></tbody></table></div>
+        </div>
+
+        <div id="doctors-view" class="view">
+            <div class="section-header"><h2>Staff Doctors</h2><button class="btn-add" onclick="openD()"><i class="fas fa-plus"></i> New Doctor</button></div>
+            <div class="table-card"><table><thead><tr><th>Name</th><th>Specialization</th><th>Dept.</th><th>Experience</th><th>Status</th></tr></thead><tbody id="d-table"></tbody></table></div>
+        </div>
+
+        <div id="attendants-view" class="view">
+            <div class="section-header"><h2>Attendants List</h2><button class="btn-add" onclick="openA()"><i class="fas fa-plus"></i> New Attendant</button></div>
+            <div class="table-card"><table><thead><tr><th>Name</th><th>Role</th><th>Shift</th><th>Contact</th><th>Status</th></tr></thead><tbody id="a-table"></tbody></table></div>
+        </div>
+
+        <div id="analytics-view" class="view">
+            <div class="section-header"><h2>Insights & Metrics</h2></div>
+            <div class="analytics-grid">
+                <div class="chart-card"><h4>Admissions by Department</h4><canvas id="deptChartFull"></canvas></div>
+                <div class="chart-card"><h4>Appointment Success Rate</h4><canvas id="effChart"></canvas></div>
+                <div class="chart-card"><h4>Patient Demographics</h4><canvas id="demoChart"></canvas></div>
+                <div class="chart-card"><h4>Emergency vs Elective</h4><canvas id="typeChart"></canvas></div>
+            </div>
+        </div>
+        <div id="settings-view" class="view">
+    <div class="section-header"><h2>System Configuration</h2></div>
+    <div class="settings-container">
+        <div class="settings-column">
+            <!-- General Settings Card -->
+            <div class="settings-card">
+                <h3>General Settings</h3>
+                <div class="setting-row">
+                    <div class="form-group full-width">
+                        <label>Default Region Code</label>
+                        <select id="sDefaultCode" class="form-control country-select" style="width:100%"></select>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <span>System Currency</span>
+                    <select id="currency" class="form-control" style="width: 120px">
+
+                        <option>USD ($)</option>
+                        <option>GBP (£)</option>
+                        <option>INR (₹)</option>
+                        <option>EUR (€)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Preferences Card -->
+            <div class="settings-card">
+                <h3>Preferences</h3>
+                <div class="setting-row"><span>Push Notifications</span><input type="checkbox" checked></div>
+                <div class="setting-row"><span>Two-Factor Auth</span><input type="checkbox"></div>
+                <div class="setting-row"><span>Maintenance Mode</span><input type="checkbox" onchange="showNotification('System status updated')"></div>
+                <div style="margin-top: 20px">
+                    <button class="btn-danger" style="width: 100%" onclick="localStorage.clear(); location.reload()">Reset All Local Data</button>
+                </div>
+            </div>
+
+            <!-- Account Settings Card (NEW) -->
+            <div class="settings-card">
+                <h3>Account Settings</h3>
+
+                <div class="setting-row">
+                    <div class="form-group full-width">
+                        <label>Update Email</label>
+                        <input type="email" id="adminEmail" class="form-control" placeholder="admin@hospital.com">
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="form-group full-width">
+                        <label>New Password</label>
+                        <input type="password" id="adminPassword" class="form-control" placeholder="••••••••">
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="form-group full-width">
+                        <label>Confirm Password</label>
+                        <input type="password" id="adminPasswordConfirm" class="form-control" placeholder="••••••••">
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px"> 
+    <button class="btn-add" 
+            style="width: 100%; display: flex; justify-content: center; align-items: center;" 
+            onclick="updateAdminCredentials()">
+        Update Account
+    </button>
+</div>
+
+            </div>
+        </div>
+
+        <!-- Activity + Settings Combined Card -->
+<div class="settings-card">
+    <h3>System Activity</h3>
+
+    <!-- Activity Logs -->
+    <div class="log-list" id="activity-log">
+        <div class="log-item">System initialized successfully.</div>
+        <div class="log-item">Admin updated preferences.</div>
+        <div class="log-item">Backup completed.</div>
+    </div>
+
+    <hr style="margin:15px 0">
+
+    <!-- Backup Section -->
+    <h4>Backup & Restore</h4>
+
+    <button class="btn-add" style="width:100%;margin-bottom:10px">
+        Backup Now
+    </button>
+
+    <button class="btn-danger" style="width:100%">
+        Restore Backup
+    </button>
+
+    <hr style="margin:15px 0">
+
+    <!-- System Limits -->
+    <h4>System Limits</h4>
+
+    <div class="form-group">
+        <label>Max Patients per Day</label>
+        <input type="number" class="form-control" value="200">
+    </div>
+
+    <div class="form-group">
+        <label>Max File Upload Size (MB)</label>
+        <input type="number" class="form-control" value="10">
+    </div>
+
+    <hr style="margin:15px 0">
+
+    <!-- Appearance -->
+    <h4>Appearance</h4>
+
+    <div class="setting-row">
+    <span>Dark Mode</span>
+    <input type="checkbox" onchange="toggleDarkMode(this)">
+</div>
+
+
+
+    <hr style="margin:15px 0">
+
+    <!-- System Info -->
+    <h4>System Info</h4>
+    <p>Version: 1.0.0</p>
+    <p>Status: <span class="status-running">Running</span></p>
+    <p>Last Update: Today</p>
+</div>
+
+
+      </div>
+    </div>
+  </div>
+
+    <script>
+        // Expanded country codes list with all major countries
+        const countries = [
+            { name: "Afghanistan", code: "+93", flag: "🇦🇫" }, { name: "Albania", code: "+355", flag: "🇦🇱" },
+            { name: "Algeria", code: "+213", flag: "🇩🇿" }, { name: "Andorra", code: "+376", flag: "🇦🇩" },
+            { name: "Angola", code: "+244", flag: "🇦🇴" }, { name: "Argentina", code: "+54", flag: "🇦🇷" },
+            { name: "Armenia", code: "+374", flag: "🇦🇲" }, { name: "Australia", code: "+61", flag: "🇦🇺" },
+            { name: "Austria", code: "+43", flag: "🇦🇹" }, { name: "Azerbaijan", code: "+994", flag: "🇦🇿" },
+            { name: "Bahamas", code: "+1", flag: "🇧🇸" }, { name: "Bahrain", code: "+973", flag: "🇧🇭" },
+            { name: "Bangladesh", code: "+880", flag: "🇧🇩" }, { name: "Barbados", code: "+1", flag: "🇧🇧" },
+            { name: "Belarus", code: "+375", flag: "🇧🇾" }, { name: "Belgium", code: "+32", flag: "🇧🇪" },
+            { name: "Belize", code: "+501", flag: "🇧🇿" }, { name: "Benin", code: "+229", flag: "🇧🇯" },
+            { name: "Bhutan", code: "+975", flag: "🇧🇹" }, { name: "Bolivia", code: "+591", flag: "🇧🇴" },
+            { name: "Bosnia", code: "+387", flag: "🇧🇦" }, { name: "Botswana", code: "+267", flag: "🇧🇼" },
+            { name: "Brazil", code: "+55", flag: "🇧🇷" }, { name: "Brunei", code: "+673", flag: "🇧🇳" },
+            { name: "Bulgaria", code: "+359", flag: "🇧🇬" }, { name: "Burkina Faso", code: "+226", flag: "🇧🇫" },
+            { name: "Burundi", code: "+257", flag: "🇧🇮" }, { name: "Cambodia", code: "+855", flag: "🇰🇭" },
+            { name: "Cameroon", code: "+237", flag: "🇨🇲" }, { name: "Canada", code: "+1", flag: "🇨🇦" },
+            { name: "Cape Verde", code: "+238", flag: "🇨🇻" }, { name: "Central African Rep", code: "+236", flag: "🇨🇫" },
+            { name: "Chad", code: "+235", flag: "🇹🇩" }, { name: "Chile", code: "+56", flag: "🇨🇱" },
+            { name: "China", code: "+86", flag: "🇨🇳" }, { name: "Colombia", code: "+57", flag: "🇨🇴" },
+            { name: "Comoros", code: "+269", flag: "🇰🇲" }, { name: "Congo", code: "+242", flag: "🇨🇬" },
+            { name: "Costa Rica", code: "+506", flag: "🇨🇷" }, { name: "Croatia", code: "+385", flag: "🇭🇷" },
+            { name: "Cuba", code: "+53", flag: "🇨🇺" }, { name: "Cyprus", code: "+357", flag: "🇨🇾" },
+            { name: "Czech Republic", code: "+420", flag: "🇨🇿" }, { name: "Denmark", code: "+45", flag: "🇩🇰" },
+            { name: "Djibouti", code: "+253", flag: "🇩🇯" }, { name: "Dominica", code: "+1", flag: "🇩🇲" },
+            { name: "Dominican Republic", code: "+1", flag: "🇩🇴" }, { name: "Ecuador", code: "+593", flag: "🇪🇨" },
+            { name: "Egypt", code: "+20", flag: "🇪🇬" }, { name: "El Salvador", code: "+503", flag: "🇸🇻" },
+            { name: "Equatorial Guinea", code: "+240", flag: "🇬🇶" }, { name: "Eritrea", code: "+291", flag: "🇪🇷" },
+            { name: "Estonia", code: "+372", flag: "🇪🇪" }, { name: "Ethiopia", code: "+251", flag: "🇪🇹" },
+            { name: "Fiji", code: "+679", flag: "🇫🇯" }, { name: "Finland", code: "+358", flag: "🇫🇮" },
+            { name: "France", code: "+33", flag: "🇫🇷" }, { name: "Gabon", code: "+241", flag: "🇬🇦" },
+            { name: "Gambia", code: "+220", flag: "🇬🇲" }, { name: "Georgia", code: "+995", flag: "🇬🇪" },
+            { name: "Germany", code: "+49", flag: "🇩🇪" }, { name: "Ghana", code: "+233", flag: "🇬🇭" },
+            { name: "Greece", code: "+30", flag: "🇬🇷" }, { name: "Grenada", code: "+1", flag: "🇬🇩" },
+            { name: "Guatemala", code: "+502", flag: "🇬🇹" }, { name: "Guinea", code: "+224", flag: "🇬🇳" },
+            { name: "Guinea-Bissau", code: "+245", flag: "🇬🇼" }, { name: "Guyana", code: "+592", flag: "🇬🇾" },
+            { name: "Haiti", code: "+509", flag: "🇭🇹" }, { name: "Honduras", code: "+504", flag: "🇭🇳" },
+            { name: "Hungary", code: "+36", flag: "🇭🇺" }, { name: "Iceland", code: "+354", flag: "🇮🇸" },
+            { name: "India", code: "+91", flag: "🇮🇳" }, { name: "Indonesia", code: "+62", flag: "🇮🇩" },
+            { name: "Iran", code: "+98", flag: "🇮🇷" }, { name: "Iraq", code: "+964", flag: "🇮🇶" },
+            { name: "Ireland", code: "+353", flag: "🇮🇪" }, { name: "Israel", code: "+972", flag: "🇮🇱" },
+            { name: "Italy", code: "+39", flag: "🇮🇹" }, { name: "Jamaica", code: "+1", flag: "🇯🇲" },
+            { name: "Japan", code: "+81", flag: "🇯🇵" }, { name: "Jordan", code: "+962", flag: "🇯🇴" },
+            { name: "Kazakhstan", code: "+7", flag: "🇰🇿" }, { name: "Kenya", code: "+254", flag: "🇰🇪" },
+            { name: "Kiribati", code: "+686", flag: "🇰🇮" }, { name: "Kuwait", code: "+965", flag: "🇰🇼" },
+            { name: "Kyrgyzstan", code: "+996", flag: "🇰🇬" }, { name: "Laos", code: "+856", flag: "🇱🇦" },
+            { name: "Latvia", code: "+371", flag: "🇱🇻" }, { name: "Lebanon", code: "+961", flag: "🇱🇧" },
+            { name: "Lesotho", code: "+266", flag: "🇱🇸" }, { name: "Liberia", code: "+231", flag: "🇱🇷" },
+            { name: "Libya", code: "+218", flag: "🇱🇾" }, { name: "Liechtenstein", code: "+423", flag: "🇱🇮" },
+            { name: "Lithuania", code: "+370", flag: "🇱🇹" }, { name: "Luxembourg", code: "+352", flag: "🇱🇺" },
+            { name: "Macedonia", code: "+389", flag: "🇲🇰" }, { name: "Madagascar", code: "+261", flag: "🇲🇬" },
+            { name: "Malawi", code: "+265", flag: "🇲🇼" }, { name: "Malaysia", code: "+60", flag: "🇲🇾" },
+            { name: "Maldives", code: "+960", flag: "🇲🇻" }, { name: "Mali", code: "+223", flag: "🇲🇱" },
+            { name: "Malta", code: "+356", flag: "🇲🇹" }, { name: "Marshall Islands", code: "+692", flag: "🇲🇭" },
+            { name: "Mauritania", code: "+222", flag: "🇲🇷" }, { name: "Mauritius", code: "+230", flag: "🇲🇺" },
+            { name: "Mexico", code: "+52", flag: "🇲🇽" }, { name: "Micronesia", code: "+691", flag: "🇫🇲" },
+            { name: "Moldova", code: "+373", flag: "🇲🇩" }, { name: "Monaco", code: "+377", flag: "🇲🇨" },
+            { name: "Mongolia", code: "+976", flag: "🇲🇳" }, { name: "Montenegro", code: "+382", flag: "🇲🇪" },
+            { name: "Morocco", code: "+212", flag: "🇲🇦" }, { name: "Mozambique", code: "+258", flag: "🇲🇿" },
+            { name: "Myanmar", code: "+95", flag: "🇲🇲" }, { name: "Namibia", code: "+264", flag: "🇳🇦" },
+            { name: "Nauru", code: "+674", flag: "🇳🇷" }, { name: "Nepal", code: "+977", flag: "🇳🇵" },
+            { name: "Netherlands", code: "+31", flag: "🇳🇱" }, { name: "New Zealand", code: "+64", flag: "🇳🇿" },
+            { name: "Nicaragua", code: "+505", flag: "🇳🇮" }, { name: "Niger", code: "+227", flag: "🇳🇪" },
+            { name: "Nigeria", code: "+234", flag: "🇳🇬" }, { name: "North Korea", code: "+850", flag: "🇰🇵" },
+            { name: "Norway", code: "+47", flag: "🇳🇴" }, { name: "Oman", code: "+968", flag: "🇴🇲" },
+            { name: "Pakistan", code: "+92", flag: "🇵🇰" }, { name: "Palau", code: "+680", flag: "🇵🇼" },
+            { name: "Panama", code: "+507", flag: "🇵🇦" }, { name: "Papua New Guinea", code: "+675", flag: "🇵🇬" },
+            { name: "Paraguay", code: "+595", flag: "🇵🇾" }, { name: "Peru", code: "+51", flag: "🇵🇪" },
+            { name: "Philippines", code: "+63", flag: "🇵🇭" }, { name: "Poland", code: "+48", flag: "🇵🇱" },
+            { name: "Portugal", code: "+351", flag: "🇵🇹" }, { name: "Qatar", code: "+974", flag: "🇶🇦" },
+            { name: "Romania", code: "+40", flag: "🇷🇴" }, { name: "Russia", code: "+7", flag: "🇷🇺" },
+            { name: "Rwanda", code: "+250", flag: "🇷🇼" }, { name: "Samoa", code: "+685", flag: "🇼🇸" },
+            { name: "San Marino", code: "+378", flag: "🇸🇲" }, { name: "Saudi Arabia", code: "+966", flag: "🇸🇦" },
+            { name: "Senegal", code: "+221", flag: "🇸🇳" }, { name: "Serbia", code: "+381", flag: "🇷🇸" },
+            { name: "Seychelles", code: "+248", flag: "🇸🇨" }, { name: "Sierra Leone", code: "+232", flag: "🇸🇱" },
+            { name: "Singapore", code: "+65", flag: "🇸🇬" }, { name: "Slovakia", code: "+421", flag: "🇸🇰" },
+            { name: "Slovenia", code: "+386", flag: "🇸🇮" }, { name: "Solomon Islands", code: "+677", flag: "🇸🇧" },
+            { name: "Somalia", code: "+252", flag: "🇸🇴" }, { name: "South Africa", code: "+27", flag: "🇿🇦" },
+            { name: "South Korea", code: "+82", flag: "🇰🇷" }, { name: "Spain", code: "+34", flag: "🇪🇸" },
+            { name: "Sri Lanka", code: "+94", flag: "🇱🇰" }, { name: "Sudan", code: "+249", flag: "🇸🇩" },
+            { name: "Suriname", code: "+597", flag: "🇸🇷" }, { name: "Swaziland", code: "+268", flag: "🇸🇿" },
+            { name: "Sweden", code: "+46", flag: "🇸🇪" }, { name: "Switzerland", code: "+41", flag: "🇨🇭" },
+            { name: "Syria", code: "+963", flag: "🇸🇾" }, { name: "Taiwan", code: "+886", flag: "🇹🇼" },
+            { name: "Tajikistan", code: "+992", flag: "🇹🇯" }, { name: "Tanzania", code: "+255", flag: "🇹🇿" },
+            { name: "Thailand", code: "+66", flag: "🇹🇭" }, { name: "Togo", code: "+228", flag: "🇹🇬" },
+            { name: "Tonga", code: "+676", flag: "🇹🇴" }, { name: "Trinidad & Tobago", code: "+1", flag: "🇹🇹" },
+            { name: "Tunisia", code: "+216", flag: "🇹🇳" }, { name: "Turkey", code: "+90", flag: "🇹🇷" },
+            { name: "Turkmenistan", code: "+993", flag: "🇹🇲" }, { name: "Tuvalu", code: "+688", flag: "🇹🇻" },
+            { name: "Uganda", code: "+256", flag: "🇺🇬" }, { name: "Ukraine", code: "+380", flag: "🇺🇦" },
+            { name: "UAE", code: "+971", flag: "🇦🇪" }, { name: "UK", code: "+44", flag: "🇬🇧" },
+            { name: "USA", code: "+1", flag: "🇺🇸" }, { name: "Uruguay", code: "+598", flag: "🇺🇾" },
+            { name: "Uzbekistan", code: "+998", flag: "🇺🇿" }, { name: "Vanuatu", code: "+678", flag: "🇻🇺" },
+            { name: "Vatican City", code: "+379", flag: "🇻🇦" }, { name: "Venezuela", code: "+58", flag: "🇻🇪" },
+            { name: "Vietnam", code: "+84", flag: "🇻🇳" }, { name: "Yemen", code: "+967", flag: "🇾🇪" },
+            { name: "Zambia", code: "+260", flag: "🇿🇲" }, { name: "Zimbabwe", code: "+263", flag: "🇿🇼" }
+        ];
+
+        let patients = JSON.parse(localStorage.getItem('h_pats')) || [
+            { id: 'P-101', name: 'Alice Thompson', diagnosis: 'Hypertension', blood: 'O+', admType: 'Emergency', dob: '1990-05-15', age: 34, code: '+1', contact: '5550101', address: '123 Pine St', admDate: '2023-10-01', gender: 'Female' }
+        ];
+        let doctors = JSON.parse(localStorage.getItem('h_docs')) || [
+            { id: 'D-101', name: 'Dr. Sarah Wilson', spec: 'Cardiologist', dept: 'Cardiology', status: 'Available', code: '+1', phone: '5554433', exp: 12, gender: 'Female' }
+        ];
+        let attendants = JSON.parse(localStorage.getItem('h_atts')) || [
+            { id: 'A-1', name: 'Robert Fox', role: 'Nurse', shift: 'Morning', code: '+1', contact: '5559988', notes: 'Lead Nurse', gender: 'Male' }
+        ];
+        let appointments = [
+        ];
+
+        let charts = {};
+
+        function initCountryCodes() {
+            const selects = ['pCode', 'dCode', 'aCode', 'sDefaultCode'];
+            // Sort by name for easier navigation
+            const sorted = countries.sort((a,b) => a.name.localeCompare(b.name));
+            const opts = sorted.map(c => `<option value="${c.code}">${c.flag} ${c.code} (${c.name})</option>`).join('');
+            selects.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.innerHTML = opts;
+            });
+        }
+
+        function showNotification(m) { 
+            const n = document.getElementById('notification'); 
+            n.innerText = m; n.style.display = 'block'; 
+            setTimeout(() => n.style.display = 'none', 3000); 
+            logAction(m);
+        }
+
+        function logAction(m) {
+            const log = document.getElementById('activity-log');
+            if(!log) return;
+            const time = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = 'log-item';
+            div.innerText = `[${time}] ${m}`;
+            log.prepend(div);
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function calculateAge() { const d = document.getElementById('pDob').value; if(d) document.getElementById('pAge').value = new Date().getFullYear() - new Date(d).getFullYear(); }
+
+        function switchView(v) {
+            document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
+            document.getElementById(v + '-view').classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+            const target = Array.from(document.querySelectorAll('.nav-item')).find(item => item.innerText.toLowerCase().includes(v.substring(0,4)));
+            if(target) target.classList.add('active');
+            if(v === 'analytics' || v === 'dashboard') initCharts();
+        }
+
+        function openP(data = null) {
+            document.getElementById('patientForm').reset();
+            const isEdit = !!data;
+            document.getElementById('pSaveBtn').style.display = isEdit ? 'none' : 'block';
+            document.getElementById('pDeleteBtn').style.display = isEdit ? 'block' : 'none';
+            document.getElementById('pId').value = isEdit ? data.id : '';
+            document.getElementById('pModalTitle').innerText = isEdit ? 'Manage Patient' : 'Register Patient';
+            document.getElementById('pDeleteBtn').style.display = isEdit ? 'block' : 'none';
+            if(isEdit) {
+                const fields = ['Name','Gender','Dob','Age','Blood','Code','Contact','AdmType','AdmDate','Diagnosis','Address'];
+                fields.forEach(f => {
+                    const el = document.getElementById('p'+f);
+                    if(el) el.value = data[f.toLowerCase()] || '';
+                });
+            }
+            openModal('patientModal');
+        }
+
+  function required(val) {
+  return val !== null && val !== undefined && val.toString().trim() !== "";
+}
+function validatePasswords(passId, confirmId) {
+  const pass = document.getElementById(passId)?.value || "";
+  const confirm = document.getElementById(confirmId)?.value || "";
+
+  if (!pass || !confirm) {
+    showNotification("Password and Confirm Password are required");
+    return false;
+  }
+
+  if (pass !== confirm) {
+    showNotification("Passwords do not match");
+    return false;
+  }
+
+  return true;
+}
+
+async function savePatient() {
+
+
+  if (!validatePasswords('pPassword', 'pConfirmPassword')) return;
+
+  // REQUIRED checks
+  if (!required(pName.value)) return alert("Full name is required");
+  if (!required(pUsername.value)) return alert("Username is required");
+  if (!required(pGender.value)) return alert("Gender is required");
+  if (!required(pDob.value)) return alert("Date of birth is required");
+  if (!required(pAge.value)) return alert("Age is required");
+  if (!required(pBlood.value)) return alert("Blood group is required");
+  if (!required(pCode.value)) return alert("Country code is required");
+  if (!required(pContact.value)) return alert("Contact number is required");
+  if (!required(pAdmType.value)) return alert("Admission type is required");
+  if (!required(pDiagnosis.value)) return alert("Diagnosis is required");
+  if (!required(pAddress.value)) return alert("Address is required");
+  if (!required(pAdmDate.value)) return alert("Admission date is required");
+
+  const payload = {
+    name: pName.value.trim(),
+    username: pUsername.value.trim(),
+    password: pPassword.value,
+
+    gender: pGender.value,
+    dob: pDob.value,
+    age: parseInt(pAge.value),
+    blood: pBlood.value,
+    code: pCode.value,
+    contact: pContact.value.trim(),
+    admType: pAdmType.value,
+
+    admDate: pAdmDate.value ,
+
+    diagnosis: pDiagnosis.value,
+    address: pAddress.value
+  };
+
+  const res = await fetch("/admin/patients", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    console.error(err);
+    alert("Failed to save patient");
+    return;
+  }
+
+  alert("Patient saved successfully");
+  closeModal("patientModal");
+  loadPatients();
+}
+
+
+async function loadPatients() {
+  const res = await fetch("/admin/patients", {
+    credentials: "include"
+  });
+
+  patients = await res.json();
+  render();
+}
+document.addEventListener("DOMContentLoaded", loadPatients);
+async function deleteEntry(type, idField, modalId) {
+  if (!confirm("Delete this record?")) return;
+
+  const id = document.getElementById(idField).value;
+
+  await fetch(`/admin/patients/${id}`, {
+  method: "DELETE",
+  credentials: "include"
+});
+
+
+  showNotification("Deleted");
+  closeModal(modalId);
+  loadPatients();
+}
+
+async function deletePatient() {
+  const id = document.getElementById("pId").value;
+
+  if (!id) {
+    alert("No patient selected");
+    return;
+  }
+
+  if (!confirm("Are you sure you want to delete this patient?")) return;
+
+  try {
+    const res = await fetch(`/admin/patients/${id}`, {
+      method: "DELETE",
+      credentials: "include"
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Failed to delete patient");
+      return;
+    }
+
+    showNotification("Patient deleted successfully");
+    closeModal("patientModal");
+    loadPatients();
+
+  } catch (err) {
+    console.error("DELETE ERROR:", err);
+    alert("Server error while deleting patient");
+  }
+}
+
+async function saveAttendant() {
+
+  if (!validatePasswords('aPassword', 'aConfirmPassword')) return;
+
+  // REQUIRED checks
+  if (!required(aName.value)) return alert("Full name is required");
+  if (!required(aUsername.value)) return alert("Username is required");
+  if (!required(aGender.value)) return alert("Gender is required");
+  if (!required(aDob.value)) return alert("Date of birth is required");
+  if (!required(aAge.value)) return alert("Age is required");
+  if (!required(aCode.value)) return alert("Country code is required");
+  if (!required(aContact.value)) return alert("Contact number is required");
+  if (!required(aAddress.value)) return alert("Address is required");
+  if (!required(aRole.value)) return alert("Role is required");
+  if (!required(aShift.value)) return alert("Shift is required");
+
+  const payload = {
+  name: aName.value.trim(),
+  username: aUsername.value.trim(),
+  password: aPassword.value,
+  gender: aGender.value,
+  dob: aDob.value,
+  age: parseInt(aAge.value),
+  role: aRole.value,
+  shift: aShift.value,
+  code: aCode.value,
+  contact: aContact.value.trim(),
+  address: aAddress.value,
+  notes: aNotes.value,
+  email: aEmail.value
+
+  };
+
+  try {
+    const res = await fetch("/admin/attendants", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Failed to save attendant");
+      return;
+    }
+
+    showNotification("Attendant saved successfully");
+    closeModal("attendantModal");
+    loadAttendants();
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
+}
+
+async function loadAttendants() {
+  try {
+    const res = await fetch("/admin/attendants", {
+      credentials: "include"
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("LOAD ATTENDANTS ERROR:", err);
+      return;
+    }
+
+    const attendants = await res.json();
+
+    const tbody = document.getElementById("a-table");
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    attendants.forEach(a => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${a.name}</td>
+        <td>${a.role}</td>
+        <td>${a.shift}</td>
+        <td>${a.contact}</td>
+        <td>${a.status}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error("FETCH ATTENDANTS FAILED:", err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadAttendants);
+
+async function deleteAttendant() {
+  const id = document.getElementById("aId").value;
+
+  if (!id) {
+    alert("No attendant selected");
+    return;
+  }
+
+  if (!confirm("Are you sure you want to delete this attendant?")) return;
+
+  try {
+    const res = await fetch(`/admin/attendants/${id}`, {
+      method: "DELETE",
+      credentials: "include"
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Failed to delete attendant");
+      return;
+    }
+
+    showNotification("Attendant deleted successfully");
+    closeModal("attendantModal");
+    loadAttendants();
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
+}
+
+async function saveDoctor() {
+  const password = dPassword.value;
+  const confirm = dConfirmPassword.value;
+
+  if (password !== confirm) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  const data = {
+    name: dName.value,
+    username: dUsername.value,
+    email: dEmail.value,
+    password: password,
+    gender: dGender.value,
+    dob: dDob.value,
+    age: dAge.value,
+    code: dCode.value,
+    phone: dPhone.value,
+    address: dAddress.value,
+    specialization: dSpec.value,
+    department: dDept.value,
+    status: dStatus.value,
+    experience: dExp.value
+  };
+
+  const res = await fetch("/admin/doctors", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  const result = await res.json();
+
+  if (result.success) {
+    closeModal("doctorModal");
+    loadDoctors();
+  } else {
+    alert(result.error);
+  }
+}
+
+async function loadDoctors() {
+  try {
+    const res = await fetch("/admin/doctors", {
+      credentials: "include"
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("LOAD DOCTORS ERROR:", err);
+      return;
+    }
+
+    const doctors = await res.json();
+
+    if (!Array.isArray(doctors)) {
+      console.error("Invalid doctors response:", doctors);
+      return;
+    }
+
+    const tbody = document.getElementById("d-table");
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    doctors.forEach(d => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${d.name}</td>
+        <td>${d.specialization}</td>
+        <td>${d.department}</td>
+        <td>${d.experience_years} Yrs</td>
+        <td>${d.status}</td>
+        <td>
+          <button class="btn-danger" onclick="deleteDoctor(${d.id})">
+            Delete
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error("FETCH DOCTORS FAILED:", err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadDoctors);
+
+
+async function deleteDoctor(id) {
+  if (!confirm("Delete this doctor?")) return;
+
+  const res = await fetch(`/admin/doctors/${id}`, {
+    method: "DELETE"
+  });
+
+  const result = await res.json();
+
+  if (result.success) {
+    closeModal("doctorModal");
+    loadDoctors();
+  } else {
+    alert(result.error);
+  }
+}
+
+
+async function openApt(data = null) {
+
+  document.getElementById('appointmentForm').reset();
+
+  // fetch latest patients & doctors
+  const pRes = await fetch("/admin/patients", { credentials: "include" });
+  const patients = await pRes.json();
+
+  const dRes = await fetch("/admin/doctors", { credentials: "include" });
+  const doctors = await dRes.json();
+
+  // fill dropdowns
+  document.getElementById('aptPatient').innerHTML =
+    patients.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+
+  document.getElementById('aptDoctor').innerHTML =
+    doctors.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+
+  const isEdit = !!data;
+
+  document.getElementById('aptId').value = isEdit ? data.id : '';
+  document.getElementById('aptModalTitle').innerText =
+    isEdit ? 'Update Appointment' : 'New Appointment';
+
+  document.getElementById('aptDeleteBtn').style.display =
+    isEdit ? 'block' : 'none';
+
+  // 🔥 FILL DATA WHEN CLICKED
+  if (isEdit) {
+    document.getElementById('aptPatient').value = data.patient_id;
+    document.getElementById('aptDoctor').value = data.doctor_id;
+    document.getElementById('aptDate').value = data.date;
+    document.getElementById('aptTime').value = data.time;
+    document.getElementById('aptStatus').value = data.status;
+    document.getElementById('aptReason').value = data.reason;
+  }
+
+  openModal('appointmentModal');
+}
+
+async function deleteAppointmentFromModal() {
+  const id = document.getElementById("aptId").value;
+
+  if (!id) {
+    alert("No appointment selected");
+    return;
+  }
+
+  if (!confirm("Are you sure you want to delete this appointment?")) return;
+
+  try {
+    const res = await fetch(`/admin/appointments/${id}`, {
+      method: "DELETE",
+      credentials: "include"
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Failed to delete appointment");
+      return;
+    }
+
+    showNotification("Appointment deleted successfully");
+    closeModal("appointmentModal");
+    loadAppointments(); // refresh table
+
+  } catch (err) {
+    console.error("DELETE ERROR:", err);
+    alert("Server error while deleting");
+  }
+}
+        async function saveAppointment() {
+  const payload = {
+    id: document.getElementById('aptId').value || null,
+    patient: parseInt(document.getElementById('aptPatient').value),
+    doctor: parseInt(document.getElementById('aptDoctor').value),
+    date: document.getElementById('aptDate').value,
+    time: document.getElementById('aptTime').value,
+    status: document.getElementById('aptStatus').value,
+    reason: document.getElementById('aptReason').value
+  };
+
+  const res = await fetch("/admin/appointments", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.error || "Failed to save appointment");
+    return;
+  }
+
+  showNotification("Appointment saved");
+  closeModal("appointmentModal");
+  loadAppointments();
+}
+
+async function loadAppointments() {
+  try {
+    const res = await fetch("/admin/appointments", {
+      credentials: "include"
+    });
+
+    const data = await res.json();
+
+    const tbody = document.getElementById("apt-table");
+    tbody.innerHTML = "";
+
+    data.forEach(a => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${a.date}</td>
+        <td>${a.patient}</td>
+        <td>${a.doctor}</td>
+        <td>${a.reason || ""}</td>
+        <td>${a.status}</td>
+      `;
+      tr.onclick = () => openApt(a);
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error("LOAD APPOINTMENTS ERROR:", err);
+  }
+}
+document.addEventListener("DOMContentLoaded", loadAppointments);
+
+        function openD(data = null) {
+            document.getElementById('doctorForm').reset();
+            const isEdit = !!data;
+            document.getElementById('dSaveBtn').style.display = isEdit ? 'none' : 'block';
+            document.getElementById('dDeleteBtn').style.display = isEdit ? 'block' : 'none';
+            document.getElementById('dId').value = isEdit ? data.id : '';
+            document.getElementById('dModalTitle').innerText = isEdit ? 'Manage Doctor' : 'Register Doctor';
+            document.getElementById('dDeleteBtn').style.display = isEdit ? 'block' : 'none';
+            if(isEdit) {
+                const fields = ['Name','Gender','Dob','Age','Code','Phone','Address','Spec','Dept','Status','Exp'];
+                fields.forEach(f => {
+                    const el = document.getElementById('d'+f);
+                    if(el) el.value = data[f.toLowerCase()] || '';
+                });
+            }
+            openModal('doctorModal');
+        }
+
+
+        function openA(data = null) {
+
+  // reset first
+  document.getElementById('attendantForm').reset();
+
+  const isEdit = !!data;
+
+  // buttons
+  document.getElementById('aSaveBtn').style.display   = isEdit ? 'none' : 'block';
+  document.getElementById('aDeleteBtn').style.display = isEdit ? 'block' : 'none';
+
+  // title
+  document.getElementById('aModalTitle').innerText =
+    isEdit ? 'Manage Attendant' : 'Register Attendant';
+
+  // hidden ID (THIS IS CRITICAL)
+  document.getElementById('aId').value = isEdit ? data.id : '';
+
+  // fill form when editing
+  if (isEdit) {
+    const map = {
+      Name: 'name',
+      Gender: 'gender',
+      Dob: 'dob',
+      Age: 'age',
+      Code: 'code',
+      Contact: 'contact',
+      Address: 'address',
+      Role: 'role',
+      Shift: 'shift',
+      Notes: 'notes'
+    };
+
+    Object.keys(map).forEach(key => {
+      const el = document.getElementById('a' + key);
+      if (el) el.value = data[map[key]] || '';
+    });
+  }
+
+  openModal('attendantModal');
+}
+
+
+
+
+
+
+
+        
+        function sync(msg) {
+            localStorage.setItem('h_pats', JSON.stringify(patients));
+            localStorage.setItem('h_docs', JSON.stringify(doctors));
+            localStorage.setItem('h_atts', JSON.stringify(attendants));
+            localStorage.setItem('h_apts', JSON.stringify(appointments));
+            render(); if(msg) showNotification(msg);
+        }
+
+        function render() {
+            document.getElementById('p-table').innerHTML = patients.map(p => `
+                <tr onclick='openP(${JSON.stringify(p)})'>
+                    <td>${p.id}</td><td>${p.name}</td><td>${p.diagnosis}</td><td>${p.blood}</td>
+                    <td><span class="badge ${p.admType==='Emergency'?'badge-danger':'badge-success'}">${p.admType}</span></td>
+                    <td>${p.age}</td><td>${p.admDate || 'N/A'}</td><td>${p.gender}</td><td>${p.code} ${p.contact}</td><td>${p.address}</td>
+                </tr>`).join('');
+
+            document.getElementById('apt-table').innerHTML = appointments.map(a => `
+                <tr onclick='openApt(${JSON.stringify(a)})'>
+                    <td>${a.date}</td><td>${a.patient}</td><td>${a.doctor}</td><td>${a.reason}</td>
+                    <td><span class="badge ${a.status==='Confirmed'?'badge-success':'badge-warning'}">${a.status}</span></td>
+                </tr>`).join('');
+
+            document.getElementById('d-table').innerHTML = doctors.map(d => `
+                <tr onclick='openD(${JSON.stringify(d)})'>
+                    <td>${d.name}</td><td>${d.spec}</td><td>${d.dept}</td><td>${d.exp} Yrs</td>
+                    <td><span class="badge ${d.status==='Available'?'badge-success':'badge-warning'}">${d.status}</span></td>
+                </tr>`).join('');
+
+            document.getElementById('a-table').innerHTML = attendants.map(a => `
+  <tr onclick='openA(${JSON.stringify(a)})'>
+    <td>${a.name}</td>
+    <td>${a.role}</td>
+    <td>${a.shift}</td>
+    <td>${a.contact}</td>
+
+    <td><span class="badge badge-info">Active</span></td>
+  </tr>
+`).join('');
+
+            
+            document.getElementById('dash-stats').innerHTML = `
+                <div class="stat-card"><div class="stat-label">Total Patients</div><div class="stat-value">${patients.length}</div></div>
+                <div class="stat-card"><div class="stat-label">Appointments</div><div class="stat-value">${appointments.length}</div></div>
+                <div class="stat-card"><div class="stat-label">Available Doctors</div><div class="stat-value">${doctors.filter(d=>d.status==='Available').length}</div></div>
+                <div class="stat-card"><div class="stat-label">On-Duty Staff</div><div class="stat-value">${attendants.length}</div></div>
+            `;
+            initCharts();
+        }
+async function updateAdminCredentials() {
+    const email = document.getElementById('adminEmail').value.trim();
+    const pass = document.getElementById('adminPassword').value;
+    const confirm = document.getElementById('adminPasswordConfirm').value;
+
+    if (pass && pass !== confirm) {
+        showNotification('Password confirmation does not match');
+        return;
+    }
+
+    // ✅ ADD IT HERE
+    const payload = {
+        email: email,
+        password: pass,
+
+        default_code: document.getElementById('sDefaultCode').value,
+        currency: document.getElementById('currency').value,   // 👈 THIS LINE
+
+        dark_mode: document.querySelector('input[type="checkbox"]').checked,
+        maintenance_mode: document.querySelectorAll('input[type="checkbox"]')[2].checked
+    };
+
+    const res = await fetch("/admin/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        alert(data.error || "Failed to update settings");
+        return;
+    }
+
+    showNotification("Settings updated successfully");
+}
+// Auto-load saved email
+document.addEventListener('DOMContentLoaded', () => {
+    const savedEmail = localStorage.getItem('admin_email');
+    if (savedEmail) {
+        document.getElementById('adminEmail').value = savedEmail;
+    }
+});
+
+        function initCharts() {
+            Object.values(charts).forEach(c => c.destroy());
+            const colors = ['#00a88e', '#1e293b', '#6366f1', '#f59e0b', '#ef4444'];
+            const ctxFlow = document.getElementById('flowChart')?.getContext('2d');
+            if(ctxFlow) charts.flow = new Chart(ctxFlow, {
+                type: 'line',
+                data: { labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'], datasets: [{ label: 'Admissions', data: [12, 19, 3, 5, 2, 3, 7], borderColor: colors[0], backgroundColor: 'rgba(0,168,142,0.1)', fill: true, tension: 0.4 }] },
+                options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            const ctxBed = document.getElementById('bedChart')?.getContext('2d');
+            if(ctxBed) charts.bed = new Chart(ctxBed, {
+                type: 'doughnut',
+                data: { labels: ['Occupied', 'Available'], datasets: [{ data: [patients.length, 50 - patients.length], backgroundColor: [colors[0], '#e2e8f0'] }] },
+                options: { maintainAspectRatio: false, cutout: '75%' }
+            });
+
+            const ctxEff = document.getElementById('effChart')?.getContext('2d');
+            if(ctxEff) charts.eff = new Chart(ctxEff, {
+                type: 'pie',
+                data: { labels: ['Success', 'Pending', 'Cxl'], datasets: [{ data: [75, 20, 5], backgroundColor: [colors[0], colors[3], colors[4]] }] },
+                options: { maintainAspectRatio: false }
+            });
+
+            const ctxDept = document.getElementById('deptChartFull')?.getContext('2d');
+            if(ctxDept) charts.dept = new Chart(ctxDept, {
+                type: 'bar',
+                data: { labels: ['Cardio', 'Neuro', 'OPD', 'ER'], datasets: [{ label: 'Cases', data: [45, 25, 60, 15], backgroundColor: colors[2] }] },
+                options: { maintainAspectRatio: false }
+            });
+
+            const ctxDemo = document.getElementById('demoChart')?.getContext('2d');
+            if(ctxDemo) charts.demo = new Chart(ctxDemo, {
+                type: 'polarArea',
+                data: { labels: ['0-18', '19-40', '41-60', '60+'], datasets: [{ data: [10, 30, 45, 15], backgroundColor: ['#00a88e88', '#1e293b88', '#6366f188', '#f59e0b88'] }] },
+                options: { maintainAspectRatio: false }
+            });
+
+            const ctxType = document.getElementById('typeChart')?.getContext('2d');
+            if(ctxType) charts.type = new Chart(ctxType, {
+                type: 'radar',
+                data: { labels: ['Admission', 'Surgery', 'ER', 'Consult', 'ICU'], datasets: [{ label: 'Frequency', data: [80, 50, 40, 90, 20], borderColor: colors[0], backgroundColor: 'rgba(0,168,142,0.2)' }] },
+                options: { maintainAspectRatio: false }
+            });
+        }
+        function calculateAge(dobId, ageId) {
+    const dobInput = document.getElementById(dobId);
+    const ageInput = document.getElementById(ageId);
+
+    if (!dobInput || !ageInput) return; // safety check
+
+    const dobValue = dobInput.value;
+    if (!dobValue) {
+        ageInput.value = '';
+        return;
+    }
+
+    const dob = new Date(dobValue);
+    const today = new Date();
+
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+
+    ageInput.value = age >= 0 ? age : '';
+}
+function togglePassword(inputId, icon) {
+    const input = document.getElementById(inputId);
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace("fa-eye", "fa-eye-slash");
+    } else {
+        input.type = "password";
+        icon.classList.replace("fa-eye-slash", "fa-eye");
+    }
+}
+
+function logoutUser() {
+    if (confirm("Logout from Admin?")) {
+        fetch("/auth/logout", {
+            method: "GET",
+            credentials: "include"
+        }).then(() => {
+            window.location.href = "/login"; // or your login page route
+        });
+    }
+}
+function toggleDarkMode(checkbox) {
+    if (checkbox.checked) {
+        document.body.classList.add("dark-mode");
+        localStorage.setItem("darkMode", "enabled");
+    } else {
+        document.body.classList.remove("dark-mode");
+        localStorage.setItem("darkMode", "disabled");
+    }
+}
+
+/* Remember dark mode on reload */
+window.onload = function() {
+    if (localStorage.getItem("darkMode") === "enabled") {
+        document.body.classList.add("dark-mode");
+        const darkToggle = document.querySelector('.setting-row input[type="checkbox"]');
+        if(darkToggle) darkToggle.checked = true;
+    }
+}
+
+
+        window.onload = () => { initCountryCodes(); render(); };
+    </script>
+</body>
+</html>

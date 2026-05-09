@@ -1,0 +1,1 @@
+["subject_id", "age", "gender", "admission_type", "heart_rate", "temperature", "respiratory_rate", "systolic_bp", "diastolic_bp", "wbc", "lactate", "creatinine", "platelets", "spo2", "age_group", "map", "hr_abnormal", "temp_abnormal", "rr_abnormal", "platelet_score", "creatinine_score", "wbc_abnormal", "lactate_abnormal", "qsofa_score", "sirs_score", "meets_sirs"]

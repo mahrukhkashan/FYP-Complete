@@ -1,0 +1,381 @@
+/* Variables for easy color adjustments */
+:root {
+    --primary-green: #29ccb2; /* Main teal/green color */
+    --secondary-green: #45e0c5; /* Lighter shade */
+    --background-color: #e0f7fa; /* Light cyan background */
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --light-text-color: #ffffff;
+    --label-color: #666666;
+    --border-color: #cccccc;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif; /* Use a common font */
+}
+
+body {
+    background-color: var(--background-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+body {
+    background-color: #e0f7fa; /* The light blue background color */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden; /* Prevents scrollbars from background effects */
+}
+
+.signup-container {
+    /* ... rest of the card styling (white background, shadow, etc.) ... */
+    z-index: 2; /* Ensure the card is on top of all background layers */
+    position: relative;
+}
+
+/* --- Dedicated Background Container --- */
+.background-container {
+    /* This element will be absolutely positioned to cover the whole screen */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Keep it behind the main signup card */
+
+  
+}
+
+
+/* --- Main Container (The White/Green Card) --- */
+.signup-container {
+    display: flex;
+    width: 900px; /* Adjust as needed */
+    max-width: 90%;
+    background-color: var(--card-background);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Left Panel (Branding/Welcome) --- */
+.signup-panel {
+    width: 40%;
+    background-color: var(--primary-green);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    padding: 40px;
+    position: relative;
+    color: var(--light-text-color);
+    /* Mimic the background pattern with a subtle gradient/shadow effect */
+    background: linear-gradient(135deg, var(--primary-green), #00a896);
+}
+
+.welcome-text {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%) rotate(-90deg);
+    font-size: 4rem;
+    font-weight: bold;
+    letter-spacing: 15px;
+    opacity: 0.15; /* Make it subtle */
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.logo-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1; /* Ensure it's above the rotated 'WELCOME' text */
+}
+
+.logo-box {
+    background-color: var(--light-text-color);
+    padding: 30px 40px;
+    border-radius: 15px;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-icon {
+    font-size: 3rem;
+    color: var(--primary-green);
+    /* For the ECG/heartbeat line effect */
+    transform: rotate(0deg); 
+}
+
+.logo-plus {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 1.5rem;
+    color: var(--light-text-color);
+    background-color: var(--primary-green);
+    border-radius: 50%;
+    padding: 5px;
+}
+
+.logo-slogan {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    font-weight: 500;
+    text-align: center;
+}
+
+
+/* --- Right Panel (Form) --- */
+.signup-form-area {
+    width: 60%;
+    padding: 60px 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 30px;
+}
+
+form {
+    width: 100%;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--label-color);
+    margin-bottom: 5px;
+}
+
+.input-field-container {
+    position: relative;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px; /* Space between input text and line */
+}
+
+.input-field-container input {
+    width: 100%;
+    border: none;
+    outline: none;
+    padding: 10px 30px 10px 0; /* Add right padding for icon */
+    font-size: 1rem;
+    color: var(--text-color);
+    background: transparent;
+}
+
+.input-field-container input::placeholder {
+    color: #aaaaaa;
+    font-weight: 300;
+}
+
+.input-icon {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--label-color);
+    font-size: 1rem;
+}
+
+/* --- Button --- */
+.signup-button {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--primary-green);
+    color: var(--light-text-color);
+    border: none;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(41, 204, 178, 0.4);
+}
+
+.signup-button:hover {
+    background-color: #00a896;
+}
+
+.signup-button i {
+    margin-left: 10px;
+}
+
+/* --- Footer Links --- */
+.form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.form-footer p {
+    color: var(--label-color);
+}
+
+
+.login-link {
+    color: var(--primary-green) !important;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.login-link:hover {
+    color: #00a896 !important;
+}
+.form-footer a {
+    color: var(--primary-green) !important;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.form-footer a:hover {
+    color: #00a896 !important;
+}
+
+
+
+
+.help-link {
+    color: var(--label-color);
+    text-decoration: none;
+}
+
+.info-icon {
+    font-size: 0.7rem;
+    vertical-align: middle;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 900px) {
+    .signup-container {
+        width: 90%;
+        margin: 40px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .signup-container {
+        flex-direction: column;
+    }
+
+    .signup-panel {
+        width: 100%;
+        height: 200px; /* Reduce height in mobile view */
+        order: 1; /* Move to the top */
+        padding: 20px;
+    }
+    
+    .welcome-text {
+        position: static;
+        transform: none;
+        font-size: 1.5rem;
+        letter-spacing: 5px;
+        opacity: 0.5;
+        text-align: center;
+    }
+    
+    .logo-area {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .logo-box {
+        padding: 10px 15px;
+        margin-bottom: 0;
+    }
+
+    .logo-icon {
+        font-size: 1.5rem;
+    }
+
+    .logo-plus {
+        font-size: 1rem;
+        top: -5px;
+        right: -5px;
+    }
+
+    .logo-slogan {
+        font-size: 0.7rem;
+    }
+    body::before,
+    body::after {
+        content: '';
+        position: absolute;
+        z-index: 1;
+        width: 150vw;
+        height: 150vh;
+    }
+
+/* Top-Left/Large Teal Curve */
+    body::before {
+        background: var(--primary-green);
+        top: -50%;
+        left: -50%;
+        transform: rotate(35deg); 
+        border-radius: 0 0 50% 0; /* Creates the sweeping inner curve */
+    }
+
+/* Bottom-Right/Lighter Teal Curve */
+    body::after {
+        background: var(--secondary-green);
+        bottom: -70%;
+        right: -70%;
+        transform: rotate(20deg); 
+        border-radius: 50% 0 0 0; /* Creates the sweeping inner curve */
+        opacity: 0.6;
+    }
+    .signup-form-area {
+        width: 100%;
+        padding: 40px 30px;
+        order: 2; /* Move form below the panel */
+    }
+
+    .form-footer {
+        flex-direction: column;
+        gap: 5px;
+    }
+    /* --- Footer Links --- */
+    .form-footer {
+            display: flex;
+            /* CHANGE: Push all content to the right edge */
+            justify-content: flex-end; 
+            align-items: center;
+            gap: 20px; /* Space between the two links/phrases */
+            margin-top: 20px;
+            font-size: 0.9rem;
+     }
+        
+        /* ADD THIS: Forces the 'Have an account? Login' part to the far left */
+    .form-footer p:first-child {
+            margin-right: auto; 
+     }
+    
+}

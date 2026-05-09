@@ -1,0 +1,22 @@
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+venv/
+venv_old/
+__pycache__/
+*.pyc
+
+
+# Logs
+logs/
+*.log
+
+# Models (optional but recommended)
+models/saved_models/*.pkl
+
+# OS
+.DS_Store
+Thumbs.db
