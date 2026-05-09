@@ -33,5 +33,5 @@ ARG PORT=5000
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
-# FIXED: Point to api.app instead of run
-CMD ["sh", "-c", "gunicorn api.app:app --bind 0.0.0.0:${PORT}"]
+# Run with wsgi.py
+CMD ["sh", "-c", "gunicorn wsgi:app --bind 0.0.0.0:${PORT}"]
